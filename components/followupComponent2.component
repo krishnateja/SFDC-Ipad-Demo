@@ -1,0 +1,192 @@
+<apex:component controller="IPadDemoComponentController" id="followupComponent2" >
+    <apex:attribute name="compName" type="String" required="true" assignTo="{!currentComponent}" description=""/>
+    <apex:attribute name="appId" type="String" required="true" assignTo="{!applicationId}" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>    
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <apex:attribute name="headerColor" type="String" required="true" description=""/>
+    <apex:attribute name="activityLabel" type="String" required="true" description=""/>
+    <apex:attribute name="interestLabel" type="String" required="true" description=""/>    
+    <apex:attribute name="profileLabel" type="String" required="true" description=""/>
+    <apex:attribute name="button1Label" type="String" required="true" description=""/>
+    <apex:attribute name="button1BgColor" type="String" required="true" description=""/>
+    <apex:attribute name="button1FontColor" type="String" required="true" description=""/>
+    <apex:attribute name="button2Label" type="String" required="true" description=""/>
+    <apex:attribute name="button2BgColor" type="String" required="true" description=""/>
+    <apex:attribute name="button2FontColor" type="String" required="true" description=""/>
+    <apex:attribute name="contactImageURL" type="String" required="true" description=""/>
+    <apex:attribute name="contactTwitterHandle" type="String" required="true" description=""/>
+    <style>
+        #dPage7-2{
+            background: {!bodyColor};
+            background-image: url({!bgImage});
+        }
+        .innerlogo{
+            background:none !important;
+        }
+        #dPage7-2 .follow-up-content{
+            border-radius: 15px;
+            background: white;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.4);
+        }
+        #dPage7-2 .con-whole{
+            width: 98%;
+            margin: 10px 1%;
+        }
+        #dPage7-2 .con-half{
+            width: 48%;
+            margin: 10px 1%;
+            padding-bottom: 10px;
+        }
+        #dPage7-2 .follow-up-content .title{
+            display: block;
+            padding: 10px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            color: #333;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            font-weight: bold;
+            /*border-bottom: 2px solid {!headerColor};*/
+        }
+        #dPage7-2 .follow-up-content .title-2{
+            display: block;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        #dPage7-2 .button-container{
+            margin-top: 20px;
+            width: 100%;
+        }
+        #dPage7-2 .button-container #followup-button1{
+            background: {!button1BgColor};
+            color: {!button1FontColor};
+        }
+        #dPage7-2 .button-container .followup-button{
+            width: 15%;
+            padding: 10px;
+            text-align: center;
+            float: right;
+            margin: 10px;
+            border-radius: 15px;    
+            text-shadow: none;
+            font-size: 16px;
+            font-weight: bold;    
+        }
+        #dPage7-2 .button-container #followup-button2{
+            background: {!button2BgColor};
+            color: {!button2FontColor};        
+        }
+        #dPage7-2 .twitter-handle{
+            display: block;
+            color: blue;
+        }
+        #dPage7-2 .contact-image{
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        #dPage7-2 .small-icon{
+            width: 20px;
+            height: auto;
+            margin-left: 10px;
+        }
+        #dPage7-2 .medium-icon{
+            width: 50px;
+            height: auto;
+        }
+        #dPage7-2 .followup-details{
+            padding: 3px;
+        }
+        #dPage7-2 .follow-up-content table td{
+            padding: 3px 5px;
+            vertical-align: top;
+        }
+        #dPage7-2 .follow-up-content table td input[type=checkbox]{
+            position: relative;
+            left: 0;
+            top: 0;
+            margin-right: -10px;
+            margin-top: 3px;
+            margin-left: 10px;
+        }
+    </style>
+
+
+    <div data-role="content" class="ipad-content"> 
+        <div class="follow-up-content con-whole">
+            <span class="title"><span id="account-name"></span></span>
+            <div class="left con-half">
+                <div class="left" style="width: 30%; text-align: right;">
+                    <image src="{!contactImageURL}" class="contact-image" />
+                    <span class="twitter-handle">{!contactTwitterHandle}</span>
+                </div>
+                <div class="right" style="width: 65%;" id="contact-details">
+                    <span class="title-2">Address</span>
+                    <span id="contact-address-street"></span><br />
+                    <span id="contact-address-city"></span><br />
+                    <span id="contact-address-state"></span> <span id="contact-address-postalcode"></span><br />
+                    <span id="contact-address-country"></span><br /><br />
+                    <span id="contact-phone"></span><br />
+                </div>
+            </div>
+            <div class="right con-half">
+                <span class="title-2">{!activityLabel}</span>
+                <table>
+                <apex:repeat value="{!followUpActivityItem}" var="followUpActivityItemVar">
+                    <tr>
+                        <td><image src="{!followUpActivityItemVar.IconURL__c}" class="medium-icon"/></td>
+                        <td>
+                            {!followUpActivityItemVar.Label__c}<br />
+                            {!followUpActivityItemVar.ActivityDate__c}                        
+                        </td>
+                    </tr>
+                </apex:repeat>
+                </table>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="follow-up-content con-half left">
+            <span class="title">{!interestLabel}</span>
+            <table>
+            <apex:repeat value="{!followUpInterestItem}" var="followUpInterestItemVar">
+                <tr>
+                    <td><input type="checkbox" class="checkbox-value" /></td>
+                    <td><input type="hidden" class="checkbox-value-hidden" value="{!followUpInterestItemVar.CheckboxValue__c}" /></td>
+                    <td>{!followUpInterestItemVar.Label__c}</td>                                            
+                </tr>
+            </apex:repeat>
+            </table>
+        </div>
+        <div class="follow-up-content con-half right">
+            <span class="title">{!profileLabel}</span>
+            <table>
+            <apex:repeat value="{!followUpProfileItem}" var="followUpProfileItemVar">
+                <tr>
+                    <td><image src="{!followUpProfileItemVar.IconURL__c}" class="small-icon"/></td>
+                    <td>{!followUpProfileItemVar.Label__c}</td>
+                    <td>:</td>
+                    <td>{!followUpProfileItemVar.TextValue__c}</td>
+                </tr>
+            </apex:repeat>
+            </table>
+        </div>
+        <div class="clear"></div>
+
+        <div class="button-container">
+            <div id="followup-button2" class="followup-button" >{!button2Label}</div>
+            <div id="followup-button1" class="followup-button" >{!button1Label}</div>
+        </div>
+        <!-- <image src="{!$Resource.tempPage}" /> -->
+    </div> 
+    <script>
+        $('.checkbox-value-hidden').each(function(i){
+            if($(this).val()=='true'){
+                $(this).parent().prev().find('.checkbox-value').prop('checked', true);
+            }
+        });
+    
+    </script>
+
+</apex:component>

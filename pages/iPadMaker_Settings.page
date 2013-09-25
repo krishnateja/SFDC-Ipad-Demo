@@ -1,0 +1,1503 @@
+<apex:page sidebar="false" controller="iPadMakerSettingsController" action="{!getIPadApplication}">
+  <apex:stylesheet value="{!$Page.iPadMaker_SettingsCSS}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.jQueryUiDialog, 'css/ui-lightness/jquery-ui-1.10.3.custom.min.css')}"/>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="{!URLFOR($Resource.jQueryUiDialog, 'js/jquery-ui-1.10.3.custom.min.js')}"></script>
+  <apex:include pageName="ConfigiPadApp_JSObj"/>
+  <script>
+        $ = jQuery.noConflict();                
+        $(function() {
+            addShowPageListeners();
+            attachSaveListener();
+            attachAddImageListener();
+            attachAddLinksListener();
+            attachAddFollowUpListeners();
+            attachBrowseStaticListener();
+            initPages();
+            initAccountFields();
+            initFollowUpFields();
+            initSettingsButtons();
+            initImageList();
+            initFooterIcons();
+            initDashboardImages();
+            initArticleLinks();
+            initVideoLinks();
+            initFollowUpActivityItems();
+            initFollowUpInterestItems();
+            initFollowUpProfileItems();
+            initBgImageSelection();
+        });
+
+        function initBgImageSelection(){
+            if($('#body-use-image').val()=='true'){
+                $('#app-body-bg-img').prop('checked', true);
+            }else{
+                $('#app-body-bg-color').prop('checked', true);            
+            }
+            
+            if($('#body-bg-image').val()=="{!BgImageName1}"){
+                $('#app-body-bg-img-white').prop('checked', true);
+            }else if($('#body-bg-image').val()=="{!BgImageName2}"){
+                $('#app-body-bg-img-green').prop('checked', true);            
+            }else if($('#body-bg-image').val()=="{!BgImageName3}"){
+                $('#app-body-bg-img-blue').prop('checked', true);            
+            }else if($('#body-bg-image').val()=="{!BgImageName4}"){
+                $('#app-body-bg-img-black').prop('checked', true);
+            }else if($('#body-bg-image').val()=="{!BgImageNameBrowse}"){
+                $('#app-body-bg-img-browse').prop('checked', true);
+            }
+
+
+            if($('#login-use-image').val()=='true'){
+                $('#login-body-bg-img').prop('checked', true);
+            }else{
+                $('#login-body-bg-color').prop('checked', true);            
+            }
+            
+            if($('#login-body-bg-image').val()=="{!BgImageName1}"){
+                $('#login-body-bg-img-white').prop('checked', true);
+            }else if($('#login-body-bg-image').val()=="{!BgImageName2}"){
+                $('#login-body-bg-img-green').prop('checked', true);            
+            }else if($('#login-body-bg-image').val()=="{!BgImageName3}"){
+                $('#login-body-bg-img-blue').prop('checked', true);            
+            }else if($('#login-body-bg-image').val()=="{!BgImageName4}"){
+                $('#login-body-bg-img-black').prop('checked', true);
+            }else if($('#login-body-bg-image').val()=="{!BgImageNameBrowse}"){
+                $('#login-body-bg-img-browse').prop('checked', true);
+            }
+        
+        }
+
+        
+        function imageListAttachCallback(result, $element){
+            $.each(result, function() {
+                addNewImageDiv(new ApplicationImage__c(this), $element.find('#image-list-container'));
+            });
+        }
+        function footerIconAttachCallback(result, $element){
+            $.each(result, function() {
+                addNewIconDiv(new ApplicationImage__c(this), $element.find('#footer-icon-container'));
+            });
+        }
+        function dashboardImageAttachCallback(result, $element){
+            $.each(result, function() {
+                addNewDashboardImageDiv(new ApplicationImage__c(this), $element.find('#dashboard-list-container'));
+            });
+        }        
+        function addNewIconDiv(imageObj, $container){
+            $container.append(imageObj.toFooterHTML());
+            attachBrowseStaticListener($container.find('.image-browse:last'));
+        }
+        function addNewDashboardImageDiv(imageObj, $container){
+            $container.append(imageObj.toDashboardHTML());
+            attachRemoveListener($container.find('.image-dashboard-remove:last'));
+        }
+        function initDashboardImages(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryDashboardImages}', 
+                    $('#record-id').val(),
+                    function(result){
+                        if(result.length==0){
+                            addNewDashboardImageDiv(new ApplicationImage__c({
+                                PageType__c : "{!page2Name}",
+                                IsDashboardImage__c : true,                                
+                            }), $('#edit-page2').find('#dashboard-list-container'));
+                        }else{
+                            dashboardImageAttachCallback(result, $('#edit-page2'));
+                        }
+                    }
+            );        
+        }
+
+        function attachRemoveListener($elem){
+            $($elem).on('click', function(){
+                $(this).parent().attr('data-removed', 'true');
+                $(this).parent().hide();
+            });        
+        }
+
+        function addNewArticleDiv(linkObj, $container){
+            $container.append(linkObj.toArticleLinkHTML ());
+            attachRemoveListener($container.find('.link-article-remove:last'));
+        }
+        function addNewVideoDiv(linkObj, $container){
+            $container.append(linkObj.toVideoLinkHTML ());
+            attachRemoveListener($container.find('.link-video-remove:last'));
+        }
+
+        function initArticleLinks(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryArticles}', 
+                    $('#record-id').val(),
+                    function(result){
+                        if(result.length==0){
+                            addNewArticleDiv(new ApplicationLink__c({
+                                PageType__c : "{!page4Name}",
+                                IsArticle__c : true,                                
+                            }), $('#edit-page4').find('#article-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                addNewArticleDiv(new ApplicationLink__c(this), $('#edit-page4').find('#article-list-container'));
+                            });
+                        }
+                    }
+            );
+        }
+        function initVideoLinks(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryVideos}', 
+                    $('#record-id').val(),
+                    function(result){
+                        if(result.length==0){
+                            addNewArticleDiv(new ApplicationLink__c({
+                                PageType__c : "{!page4Name}",
+                                IsVideo__c : true,                                
+                            }), $('#edit-page4').find('#video-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                addNewArticleDiv(new ApplicationLink__c(this), $('#edit-page4').find('#video-list-container'));
+                            });
+                        }
+                    }
+            );        
+        }
+
+        function addNewFollowUpItem(followUpObjHTML, $container){
+            $container.append(followUpObjHTML);
+            attachRemoveListener($container.find('.followup-remove:last'));
+            attachBrowseStaticListener($container.find('.image-browse:last'));
+        }
+        
+        function initFollowUpActivityItems(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryFollowUpItem}', 
+                    $('#record-id').val(), "{!followUpActivity}",
+                    function(result){
+                        var followUpObj = null;
+                        if(result.length==0){
+                            followUpObj = new ApplicationFollowUpItem__c({
+                                PageType__c : "{!page5Name}",
+                                Type__c : "{!followUpActivity}"
+                            });
+                            addNewFollowUpItem(followUpObj.toActivityHTML(), $('#edit-page5').find('#activity-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                followUpObj = new ApplicationFollowUpItem__c(this);
+                                addNewFollowUpItem(followUpObj.toActivityHTML(), $('#edit-page5').find('#activity-list-container'));
+                            });
+                        }
+
+                    }
+            );        
+        }
+
+        function initFollowUpInterestItems(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryFollowUpItem}', 
+                    $('#record-id').val(), "{!followUpInterest}",
+                    function(result){
+                        var followUpObj = null;
+                        if(result.length==0){
+                            followUpObj = new ApplicationFollowUpItem__c({
+                                PageType__c : "{!page5Name}",
+                                Type__c : "{!followUpInterest}"
+                            });
+                            addNewFollowUpItem(followUpObj.toInterestHTML(), $('#edit-page5').find('#interest-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                followUpObj = new ApplicationFollowUpItem__c(this);
+                                addNewFollowUpItem(followUpObj.toInterestHTML(), $('#edit-page5').find('#interest-list-container'));
+                            });
+                        }
+
+                    }
+            );        
+        }
+
+        function initFollowUpProfileItems(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryFollowUpItem}', 
+                    $('#record-id').val(), "{!followUpProfile}",
+                    function(result){
+                        var followUpObj = null;
+                        if(result.length==0){
+                            followUpObj = new ApplicationFollowUpItem__c({
+                                PageType__c : "{!page5Name}",
+                                Type__c : "{!followUpProfile}"                            
+                            });
+                            addNewFollowUpItem(followUpObj.toProfileHTML(), $('#edit-page5').find('#profile-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                followUpObj = new ApplicationFollowUpItem__c(this);
+                                addNewFollowUpItem(followUpObj.toProfileHTML(), $('#edit-page5').find('#profile-list-container'));
+                            });
+                        }
+
+                    }
+            );        
+        }
+
+
+
+        function initFooterIcons(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page1Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page1Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page1').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page1'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page2Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page2Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page2').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page2'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page3Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page3Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page3').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page3'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page4Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page4Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page4').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page4'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page5Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page5Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page5').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page5'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page6Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page6Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page6').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page6'));
+                        }
+                    }
+            );
+        }
+        
+        
+        function initImageList(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryLoginImages}', 
+                    $('#record-id').val(), 
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-loginPage'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!homePageName}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-homePage'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page1Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page1'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page2Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page2'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page3Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page3'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page4Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page4'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page5Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page5'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page6Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page6'));
+                    }
+            );
+
+        }
+        
+        function initSettingsButtons(){
+            if($('#record-id').val()){    //show view app, and create access URL buttons only if record is saved
+                $('#view-btn').show();
+                attachViewListener();
+                $('#create-url-btn').show();
+                attachCreateURLListener();
+            }
+        }
+        
+        function initPages(){
+            if($('#page1-active-hidden').val() == 'true' ){
+                $('#page1-active').attr('checked', 'checked');
+            }
+            if($('#page2-active-hidden').val() == 'true' ){
+                $('#page2-active').attr('checked', 'checked');
+            }
+            if($('#page3-active-hidden').val() == 'true' ){
+                $('#page3-active').attr('checked', 'checked');
+            }
+            if($('#page4-active-hidden').val() == 'true' ){
+                $('#page4-active').attr('checked', 'checked');
+            }
+            if($('#page5-active-hidden').val() == 'true' ){
+                $('#page5-active').attr('checked', 'checked');
+            }
+            if($('#page6-active-hidden').val() == 'true' ){
+                $('#page6-active').attr('checked', 'checked');
+            }
+        }
+
+        function initAccountFields(){
+            if($('#account-number-hidden').val() == 'true' ){
+                $('#account-number').attr('checked', 'checked');
+            }
+            if($('#account-type-hidden').val() == 'true' ){
+                $('#account-type').attr('checked', 'checked');
+            }
+            if($('#account-industry-hidden').val() == 'true' ){
+                $('#account-industry').attr('checked', 'checked');
+            }
+            if($('#account-rating-hidden').val() == 'true' ){
+                $('#account-rating').attr('checked', 'checked');
+            }
+            if($('#account-phone-hidden').val() == 'true' ){
+                $('#account-phone').attr('checked', 'checked');
+            }
+            if($('#account-address-hidden').val() == 'true' ){
+                $('#account-address').attr('checked', 'checked');
+            }
+            if($('#account-description-hidden').val() == 'true' ){
+                $('#account-description').attr('checked', 'checked');
+            }
+            if($('#account-personname-hidden').val() == 'true' ){
+                $('#account-personname').attr('checked', 'checked');
+            }
+            if($('#account-birthdate-hidden').val() == 'true' ){
+                $('#account-birthdate').attr('checked', 'checked');
+            }
+            if($('#account-email-hidden').val() == 'true' ){
+                $('#account-email').attr('checked', 'checked');
+            }            
+        }
+
+        function initFollowUpFields(){
+            if($('#followup-show-tasks-hidden').val() == 'true' ){
+                $('#followup-show-tasks').attr('checked', 'checked');
+            }        
+            if($('#followup-show-events-hidden').val() == 'true' ){
+                $('#followup-show-events').attr('checked', 'checked');
+            }        
+        }        
+        
+        function addShowPageListeners(){
+            $('#loginPage').on('click', function(){
+                $('.edit-page').removeClass('active');
+                $('#edit-loginPage').addClass('active');
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#homePage').on('click', function(){
+                $('.edit-page').removeClass('active');
+                $('#edit-homePage').addClass('active');
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page1').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page1').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page2').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page2').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page3').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page3').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page4').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page4').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page5').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page5').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page6').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page6').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+        }
+        
+
+        
+        function attachViewListener(){
+            $('#view-btn').on('click', function(){                   
+                $(this).target = "_blank";
+                window.open($('#application-url').val());
+                return false;
+            });
+        }
+        
+        function attachCreateURLListener(){
+            $('#create-url-btn').on('click', function(){                   
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.sendApplicationURL}', 
+                    $('#record-id').val(), 
+                    function(result){
+                        alert('The access URL is: ' + result + ' \n\nThis URL was sent to your email address.');
+                    }, function(e){
+                        alert('Error sending URL');
+                    }
+               );
+           });
+        }
+        
+        function addNewImageDiv(imageObj, $container){
+            $container.append(imageObj.toHTML());
+            attachRemoveListener($container.find('.image-remove:last'));
+            attachBrowseStaticListener($container.find('.image-browse:last'));
+        }
+        
+        function attachAddImageListener(){
+            $('.add-image-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#image-list-container');
+                addNewImageDiv(new ApplicationImage__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsFooterImage__c : false
+                    }), $elem);
+            });
+            $('.add-dashboard-image-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#dashboard-list-container');
+                addNewDashboardImageDiv(new ApplicationImage__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsDashboardImage__c : true
+                    }), $elem);
+            }); 
+        }
+
+        function attachBrowseStaticListener(elem){
+            if(!elem){
+                elem = '.image-browse';
+            }
+            $(elem).on('click', function(){
+                var result = window.showModalDialog('/apex/iPadMaker_StaticDialog');
+                if(result){
+                    $(this).siblings('.image-url').val('/resource/'+result);
+                }
+            });                                
+        }
+
+        function attachAddFollowUpListeners(){
+            $('.add-activity-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#activity-list-container');
+                var followUpObj = new ApplicationFollowUpItem__c({
+                    PageType__c : "{!page5Name}",
+                    Type__c : "{!followUpActivity}"                            
+                    });
+                addNewFollowUpItem(followUpObj.toActivityHTML(), $elem);
+            });
+            $('.add-interest-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#interest-list-container');
+                var followUpObj = new ApplicationFollowUpItem__c({
+                    PageType__c : "{!page5Name}",
+                    Type__c : "{!followUpInterest}"
+                    });
+                addNewFollowUpItem(followUpObj.toInterestHTML(), $elem);
+            });
+            $('.add-profile-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#profile-list-container');
+                var followUpObj = new ApplicationFollowUpItem__c({
+                    PageType__c : "{!page5Name}",
+                    Type__c : "{!followUpProfile}"
+                    });
+                addNewFollowUpItem(followUpObj.toProfileHTML(), $elem);
+            });
+        }
+        
+        function attachAddLinksListener(){
+            $('.add-article-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#article-list-container');
+                addNewArticleDiv(new ApplicationLink__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsArticle__c : true
+                    }), $elem);
+            });
+            $('.add-video-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#video-list-container');
+                addNewVideoDiv(new ApplicationLink__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsVideo__c : true
+                    }), $elem);
+            });
+        }
+        
+
+        function getBgImageValue(){
+            if($('#app-body-bg-img-white').is(':checked')){
+                return "{!BgImageName1}";
+            }else if($('#app-body-bg-img-green').is(':checked')){
+                return "{!BgImageName2}";
+            }else if($('#app-body-bg-img-blue').is(':checked')){
+                return "{!BgImageName3}";
+            }else if($('#app-body-bg-img-black').is(':checked')){
+                return "{!BgImageName4}";
+            }else if($('#app-body-bg-img-browse').is(':checked')){
+                return "{!BgImageNameBrowse}";
+            }
+        }
+        
+        function getLoginBgImageValue(){
+            if($('#login-body-bg-img-white').is(':checked')){
+                return "{!BgImageName1}";
+            }else if($('#login-body-bg-img-green').is(':checked')){
+                return "{!BgImageName2}";
+            }else if($('#login-body-bg-img-blue').is(':checked')){
+                return "{!BgImageName3}";
+            }else if($('#login-body-bg-img-black').is(':checked')){
+                return "{!BgImageName4}";
+            }else if($('#login-body-bg-img-browse').is(':checked')){
+                return "{!BgImageNameBrowse}";
+            }        
+        }
+
+        function attachSaveListener(){
+            $('#save-btn').on('click', function(){
+                var bodyBgImage = getBgImageValue();
+                var loginBgImage = getLoginBgImageValue();
+                var iPadApp = new IPadApplication__c({
+                    Id : $('#record-id').val(),
+                    Name : $('#app-name').val(),
+                    BodyColor__c : $('#app-body-bg').val(),
+                    BodyIsUseImage__c : ($('#app-body-bg-img').is(':checked') ? true : false),
+                    BodyBgImage__c : bodyBgImage,
+                    BodyBgImageURL__c : $('#app-body-bg-img-url').val(),
+                    LoginBodyColor__c : $('#login-body-color').val(),
+                    LoginIsUseImage__c : ($('#login-body-bg-img').is(':checked') ? true : false),
+                    LoginBgImage__c : loginBgImage,
+                    LoginBgImageURL__c : $('#login-body-bg-img-url').val(),
+                    LogoURL__c : $('#logo-url').val(),        
+                    FooterColor__c : $('#app-footer-bg').val(),
+                    HeaderColor__c : $('#app-header-bg').val(),
+                    FooterFontColor__c : $('#app-footer-fg').val(),
+                    HeaderFontColor__c : $('#app-header-fg').val(),
+                    AboutText__c : $('#home-about-txt').val(),
+                    Home_Page_Title__c : $('#home-title').val(),
+                    Page_1_Active__c : $('#page1-active').is(':checked') ? true : false,
+                    Page_2_Active__c : $('#page2-active').is(':checked') ? true : false,
+                    Page_3_Active__c : $('#page3-active').is(':checked') ? true : false, 
+                    Page_4_Active__c : $('#page4-active').is(':checked') ? true : false,
+                    Page_5_Active__c : $('#page5-active').is(':checked') ? true : false, 
+                    Page_6_Active__c : $('#page6-active').is(':checked') ? true : false,                   
+                    Page_1_Title__c : $('#page1-title').val(),
+                    Page_2_Title__c : $('#page2-title').val(),
+                    Page_3_Title__c : $('#page3-title').val(),
+                    Page_4_Title__c : $('#page4-title').val(),
+                    Page_5_Title__c : $('#page5-title').val(),
+                    Page_6_Title__c : $('#page6-title').val(), 
+                    ChatterId__c : $('#chatter-id').val(),
+                    ChatterPositionX__c : $('#chatter-locX').val(), 
+                    ChatterPositionY__c : $('#chatter-locY').val(),                     
+                    ApplicationURL__c : $('#application-url').val(),
+                    DashboardId__c : $('#dashboard-id').val(),
+                    DashboardPositionX__c : $('#dashboard-locX').val(),
+                    DashboardPositionY__c : $('#dashboard-locY').val(),
+                    VisualforcePageName__c : $('#vf-name').val(),
+                    VisualforcePageLocationX__c : $('#vf-locX').val(),
+                    VisualforcePageLocationY__c : $('#vf-locY').val(),
+                    AccountNumber__c : $('#account-number').is(':checked') ? true : false, 
+                    AccountType__c : $('#account-type').is(':checked') ? true : false, 
+                    AccountIndustry__c : $('#account-industry').is(':checked') ? true : false, 
+                    AccountRating__c : $('#account-rating').is(':checked') ? true : false, 
+                    AccountPhone__c : $('#account-phone').is(':checked') ? true : false, 
+                    AccountAddress__c : $('#account-address').is(':checked') ? true : false, 
+                    AccountDescription__c : $('#account-description').is(':checked') ? true : false, 
+                    AccountPersonName__c : $('#account-personname').is(':checked') ? true : false, 
+                    AccountPersonBirthdate__c : $('#account-birthdate').is(':checked') ? true : false,
+                    AccountPersonEmail__c : $('#account-email').is(':checked') ? true : false,
+                    LoginLabelColor__c : $('#login-label-color').val(),
+                    LoginButtonColor__c : $('#login-button-color').val(),
+                    LoginButtonLabelColor__c : $('#login-button-label-color').val(),
+                    Password__c : $('#password').val(),
+                    Username__c : $('#username').val(),
+                    FollowUpMapHeight__c : $('#followup-map-height').val(),
+                    FollowUpMapWidth__c : $('#followup-map-width').val(),
+                    FollowUpMapZoom__c : $('#followup-map-zoom').val(),
+                    FollowUpShowTasks__c : $('#followup-show-tasks').is(':checked') ? true : false,
+                    FollowUpShowEvents__c : $('#followup-show-events').is(':checked') ? true : false,
+                    FollowUpActivitiesLabel__c : $('#followup-activities-label').val(),
+                    FollowUpProfileLabel__c : $('#followup-profile-label').val(),
+                    FollowUpInterestLabel__c : $('#followup-interest-label').val(),
+                    FollowUpButton1BgColor__c : $('#followup-button1-bg-color').val(),
+                    FollowUpButton1FontColor__c : $('#followup-button1-font-color').val(),
+                    FollowUpButton1Label__c : $('#followup-button1-label').val(),
+                    FollowUpButton2BgColor__c : $('#followup-button2-bg-color').val(),
+                    FollowUpButton2FontColor__c : $('#followup-button2-font-color').val(),
+                    FollowUpButton2Label__c : $('#followup-button2-label').val(),
+                    FollowUpContactImageURL__c : $('#followup-contact-image').val(), 
+                    FollowUpContactTwitterHandle__c : $('#followup-contact-twitter').val(),
+                });
+                console.log(iPadApp);
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveApplication}', 
+                    iPadApp, function(result){
+                        alert('saved app');
+                        if(!iPadApp.Id){    //is new record
+                            $('#record-id').val(result);
+                            $('#application-url').val(iPadApp.ApplicationURL__c);
+                            initSettingsButtons();
+                        }
+                        saveImages();
+                    });
+            });
+        }
+        
+        
+        function saveImages(){
+            var imageList = [];
+            $.each($(".image-div[data-removed!='true']"), function() {
+                if($(this).find('.image-url').val() || $(this).find('.image-dashboard-url').val()){
+                    imageList.push(new ApplicationImage__c({
+                        Id : $(this).find('.image-id').val(),
+                        ImageURL__c : $(this).find('.image-url').val(),
+                        Height__c : $(this).find('.image-height').val(),
+                        Width__c : $(this).find('.image-width').val(),
+                        LocationX__c : $(this).find('.image-locX').val(),
+                        LocationY__c : $(this).find('.image-locY').val(),
+                        PageType__c : $(this).find('.image-pagetype').val(),
+                        IsFooterImage__c : $(this).find('.image-isfooter').val()=='true' ? true : false,
+                        IsDashboardImage__c : $(this).find('.image-isdashboard').val()=='true' ? true : false,
+                        DashboardURL__c : $(this).find('.image-dashboard-url').val(), 
+                        Label__c : $(this).find('.image-label').val(),
+                        LabelFontSize__c : $(this).find('.image-label-font-size').val(),
+                        LabelLocationX__c : $(this).find('.image-label-locX').val(),
+                        LabelLocationY__c : $(this).find('.image-label-locY').val(),
+                        DashboardFromURL__c :($(this).find('.dashboard-chart-image').is(':checked') ? true : false),
+                        ReportId__c : $(this).find('.image-report').val(),
+                        ChartType__c : $(this).find('.image-chart-type option:selected').val(),
+                        DasboardLegendLabel__c : $(this).find('.image-dashboard-legend-label').val(),
+                        DasboardValueLabel__c : $(this).find('.image-dashboard-value-label').val(),
+                    }));
+                }
+
+            });
+            console.log(imageList);
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveImages}', 
+                    imageList, $('#record-id').val(),function(result){
+                        //assign new Ids
+                        $.each(result, function() {
+                            var image = new ApplicationImage__c(this);
+                            image.assignNewId();
+                        }); 
+            });
+
+            imageList = [];
+            $.each($(".image-div[data-removed='true']"), function() {
+                imageList.push(new ApplicationImage__c({
+                    Id : $(this).find('.image-id').val(),
+                }));
+            });
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.removeImages}', 
+                    imageList, function(result){
+                        //remove deleted image DOMS
+                        $('.image-div[data-removed="true"]').remove();
+                    }
+            );
+
+            saveLinks();
+        }
+
+        function saveLinks(){
+            var linkList = [];
+            $.each($(".link-div[data-removed!='true']"), function() {
+                if($(this).find('.link-name').val()){
+                    linkList.push(new ApplicationLink__c({
+                        Id : $(this).find('.link-id').val(),
+                        Name : $(this).find('.link-name').val(),
+                        IsArticle__c : $(this).find('.link-isarticle').val()=='true' ? true : false,
+                        IsVideo__c : $(this).find('.link-isvideo').val()=='true' ? true : false,
+                        PageType__c : $(this).find('.link-pagetype').val(),
+                        URL__c : $(this).find('.link-url').val(),
+                    }));                
+                }
+
+            });
+            console.log(linkList);
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveLinks}', 
+                    linkList, $('#record-id').val(),function(result){
+                        //assign new Ids
+                        $.each(result, function() {
+                            var link = new ApplicationLink__c(this);
+                            link.assignNewId();
+                        }); 
+                    }
+            );
+
+            linkList = [];
+            $.each($(".link-div[data-removed='true']"), function() {
+                linkList.push(new ApplicationLink__c({
+                    Id : $(this).find('.link-id').val(),
+                }));
+            });
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.removeLinks}', 
+                    linkList, function(){
+                        //remove deleted image DOMS
+                        $('.link-div[data-removed="true"]').remove();
+                    }
+            );
+            saveFollowUps();
+        }
+
+        function saveFollowUps(){
+            var followupList = [];
+            $.each($(".followup-div[data-removed!='true']"), function() {
+                if($(this).find('.followup-label').val()){
+                    followupList.push(new ApplicationFollowUpItem__c({
+                        Id : $(this).find('.followup-id').val(),
+                        ActivityDate__c : $(this).find('.followup-activity-date').val(),
+                        CheckboxValue__c : $(this).find('.followup-checkbox-value').is(':checked') ? true : false, 
+                        IconURL__c : $(this).find('.followup-icon-url').val(),
+                        IsCheckbox__c : $(this).find('.followup-ischeckbox').val()=='true' ? true : false,
+                        Label__c : $(this).find('.followup-label').val(),
+                        PageType__c : $(this).find('.followup-pagetype').val(),
+                        TextValue__c : $(this).find('.followup-text-value').val(),
+                        Type__c : $(this).find('.followup-type').val(),
+                        SortNumber__c : $(this).find('.followup-sort-number').val(),
+                    }));
+                }
+            });
+            console.log(followupList);
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveFollowUpItems}', 
+                    followupList, $('#record-id').val(),function(result){
+                        //assign new Ids
+                        $.each(result, function() {
+                            var followup = new ApplicationFollowUpItem__c(this);
+                            followup.assignNewId();
+                        }); 
+                    }
+            );
+
+            followupList = [];
+            $.each($(".followup-div[data-removed='true']"), function() {
+                followupList.push(new ApplicationFollowUpItem__c({
+                    Id : $(this).find('.followup-id').val(),
+                }));
+            });
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.removeFollowUpItems}', 
+                    followupList, function(){
+                        //remove deleted followup dom
+                        $('.followup-div[data-removed="true"]').remove();
+                    }
+            );
+        }
+    </script>
+  
+  <div class="row" id="build">
+    <div class="pre_save">
+      <input type="button" value="Create Access URL" id="create-url-btn" style="display: none;"/>
+      <input type="button" value="View App" id="view-btn" style="display: none;"/>
+      <input type="button" value="Save" id="save-btn" />
+    </div>
+    <div id="section-settings">
+      <h1>iPad Demo Builder</h1>
+      <div id="build-desc">
+        <p>Follow the steps below to make an iPad Demo</p>
+      </div>
+      <div style="clear:both;" class="optionsDiv">
+        <h3><span class="badge badge-info">1 </span>Set the App Name and Basic Settings</h3>
+        <input type="hidden" value="{!iPadApp.BodyIsUseImage__c}" id="body-use-image" />
+        <input type="hidden" value="{!iPadApp.BodyBgImage__c}" id="body-bg-image" />
+        <div class="config-container col-1 c25w">
+          <div class="fltLeft">
+            <h3>Add an application name</h3>
+            <input type="hidden" id="record-id" value="{!iPadApp.Id}" />
+            <input type="hidden" id="application-url" value="{!iPadApp.ApplicationURL__c}" />
+            <input type="text" id="app-name" value="{!iPadApp.Name}" class="appName" />
+           <div class="lbBlock">
+            <h3>Header</h3>
+             
+            <label>Background-color:</label>
+            <input type="color" class="color-input" id="app-header-bg" value="{!iPadApp.HeaderColor__c}" />
+            </div>
+             <div class="lbBlock">
+            <label>Font-color:</label>
+            <input type="color" class="color-input" id="app-header-fg" value="{!iPadApp.HeaderFontColor__c}" />
+            </div>
+          </div>
+          <div class="fltLeft">
+            <h3>Footer</h3>
+            <label>Background-color:</label>
+            <input type="color" class="color-input" id="app-footer-bg" value="{!iPadApp.FooterColor__c}" />
+          </div>
+        </div>
+        <div class="config-container col-1 c37w">
+          <h3>Background Settings</h3>
+          <div class="fltLeft">
+            <div class="lbBlock">
+            <input type="radio" name="app-body-bg" class="app-body-bg" id="app-body-bg-color"/>
+            <label>Background-Color: </label>
+            <input type="color" class="color-input" id="app-body-bg" value="{!iPadApp.BodyColor__c}" />
+            </div>
+          </div>
+          <div class="fltLeft">
+            <div class="lbBlock">
+            <input type="radio" name="app-body-bg" id="app-body-bg-img"/>
+            <label>Background-Image :</label>
+            <br />
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-white" value="" />
+              <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'white-bg.png')}" /> </div>
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-green" value="" />
+              <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'green-bg.png')}" /> </div>
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-blue" value="" />
+              <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'blue-bg.png')}" /> </div>
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-black" value="" />
+              <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'black-bg.png')}" /> </div>
+            <div>
+            </div>
+            <div class="lbBlock">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-browse" value="" />
+              <label>Image URL: </label>
+              <input class="txt-input image-url" value="{!iPadApp.BodyBgImageURL__c}" id="app-body-bg-img-url"/>
+              <input type="button" value="Browse" class="image-browse" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 class="fltLeft"><span class="badge badge-info">2</span> Choose the page you want to customize</h3>
+        <div class="pageBtnsDiv">
+          <button class="btn show-page" data-name="Login Page" id="loginPage" href="">{!LoginPageName}</button>
+          <button class="btn show-page" data-name="Home Page" id="homePage" href="">{!HomePageName}</button>
+          <button class="btn show-page" data-name="page1" id="page1" href="">Chatter</button>
+          <button class="btn show-page" data-name="page2" id="page2" href="">Dashboard</button>
+          <button class="btn show-page" data-name="page3" id="page3" href="">Create Account</button>
+          <button class="btn show-page" data-name="page4" id="page4" href="">Learning</button>
+          <button class="btn show-page" data-name="page5" id="page5" href="">Follow Up</button>
+          <button class="btn show-page" data-name="page6" id="page6" href="">Customized Page</button>
+        </div>
+        <div id="edit-loginPage" class="edit-page">
+          <h3><span class="badge badge-info">3-1</span> Customize the Login Page</h3>
+          <p>Customize your login page by changing the background, and login button settings. 
+            Add a logo image to be used in your demo. The recommended logo size is 200x120px.
+            In the "Login Code", enter the username and password of the Salesforce User to be used in the demo. </p>
+          <input type="hidden" value="{!iPadApp.LoginIsUseImage__c}" id="login-use-image" />
+          <input type="hidden" value="{!iPadApp.LoginBgImage__c}" id="login-body-bg-image" />
+          <div>
+            <input type="hidden" value="{!loginPageName}" class="page-name" />
+            <div class="config-container col-1 c20w">
+              <div class="fltLeft mBtm">
+                <h3>Login Code</h3>
+                <label>Username:</label>
+                <input class="txt-input" id="username" value="{!iPadApp.Username__c}" />
+               
+                <label>Password:</label>
+                <input class="txt-input" id="password" value="{!iPadApp.Password__c}" />
+              </div>
+              <div class="fltLeft">
+                <h3>Login Button Settings</h3>
+                <div class="lbBlock"><label>Background-color: </label>
+                <input type="color" class="color-input" id="login-button-color" value="{!iPadApp.LoginButtonColor__c }" />
+                </div>
+                <div class="lbBlock">
+                <label>Font-color: </label>
+                <input type="color" class="color-input" id="login-button-label-color" value="{!iPadApp.LoginButtonLabelColor__c }" />
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c35w">
+              <div class="fltLeft mBtm">
+                <h3>Background Settings</h3>
+                <div class="fltLeft">
+                  <input type="radio" name="login-body-bg" class="login-body-bg" id="login-body-bg-color"/>
+                  <label>Use Color as Background: </label>
+                  <input type="color" class="color-input" id="login-body-color" value="{!iPadApp.LoginBodyColor__c}" />
+                </div>
+                <div class="fltLeft">
+                  <input type="radio" name="login-body-bg" id="login-body-bg-img"/>
+                  <label>Use Image as Background:</label>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-white" value="" />
+                    <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'white-bg.png')}" /> </div>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-green" value="" />
+                    <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'green-bg.png')}" /> </div>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-blue" value="" />
+                    <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'blue-bg.png')}" /> </div>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-black" value="" />
+                    <img style="width: 50px;" src="{!URLFOR($Resource.iPadBg, 'black-bg.png')}" /> </div>
+                 
+                   <div class="lbBlock">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-browse" value="" />
+                    <label>Image URL: </label>
+                    <input class="txt-input image-url" value="{!iPadApp.LoginBgImageURL__c}" id="login-body-bg-img-url"/>
+                    <input type="button" value="Browse" class="image-browse" />
+                    </div>
+                  
+                </div>
+              </div>
+              <div class="fltLeft">
+                <h3>Logo Settings</h3>
+                <div class="logo-div">
+                  <label>Image URL: </label>
+                  <input class="txt-input image-url" id="logo-url" value="{!iPadApp.LogoURL__c}" />
+                  <input type="button" value="Browse" class="image-browse" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div id="edit-homePage" class="edit-page">
+          <h3><span class="badge badge-info">3-2</span> Customize the Landing Page</h3>
+          <p>The Landing Page works as a menu that will link the user to the other pages in the app. 
+            It uses as background the settings made in Step 1. It can further be customized by adding images. </p>
+          <div>
+            <input type="hidden" value="{!homePageName}" class="page-name" />
+            <div class="config-container col-1 c37w">
+              <label>About Title:</label>
+              <input type="text" class="txt-input" id="home-title" value="{!iPadApp.Home_Page_Title__c}" placeholder="About the Bank" />
+              <label>About Text:</label>
+              ​
+              <textarea id="home-about-txt" rows="10" cols="90">{!iPadApp.AboutText__c}</textarea>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Add Images</h3>
+              <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              <div id="image-list-container"> </div>
+            </div>
+          </div>
+        </div>
+        <!-- Chatter Page -->
+        <div id="edit-page1" class="edit-page">
+          <h3><span class="badge badge-info">3-3</span> Customize the Chatter Page</h3>
+          <p>The Chatter page shows the Chatter feed of the entered Chatter Feed Id. 
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app.
+            You can customized how the page looks by setting the position of Chatter, and adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_1_Active__c}" id="page1-active-hidden" />
+            <input type="hidden" value="{!page1Name}" class="page-name" />
+            <div class="config-container col-1 c20w">
+              <div class="fltLeft mBtm">
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Activate this page</label>
+                <input type="checkbox" id="page1-active"/>
+               </div>
+                <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page1-title" value="{!iPadApp.Page_1_Title__c}" placeholder="Collaborate"/>
+               
+               </div>
+              
+               
+                <div class="lbBlock">
+                <label>Chatter Feed Id:</label>
+                <input type="text" class="txt-input" id="chatter-id" value="{!iPadApp.ChatterId__c}" />
+                </div>
+              </div>
+               </div>
+               <div class="config-container col-1 c20w">
+              <div class="fltLeft">
+              <div class="lbBlock">
+                <h3>Menu Icon</h3>
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <div class="fltLeft mBtm">
+                <h3>Chatter Position</h3>
+                 <div class="lbBlock">
+                <label>Left:</label>
+                <input type="number" class="px-input" id="chatter-locX" value="{!iPadApp.ChatterPositionX__c}" />
+                </div>
+                 <div class="lbBlock">
+                <label>Top:</label>
+                <input type="number" class="px-input" id="chatter-locY" value="{!iPadApp.ChatterPositionY__c}" />
+                </div>
+              </div>
+              <div class="fltLeft">
+                <h3>Add Other Images</h3>
+                <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+                <div id="image-list-container"> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Dashboard Page -->
+        <div id="edit-page2" class="edit-page">
+          <h3><span class="badge badge-info">3-4</span> Customize the Dashboard Page</h3>
+          <p>The Dashboard page shows the entered dashboard chart images. You can create a chart based on a report, or by entering the charts image url.
+            To get the URL of a chart created on a standard dashboard, please refer to this video: http://www.youtube.com/watch?v=IBQcywsJ0OE . 
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. 
+            You can customized how the page looks by adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_2_Active__c}" id="page2-active-hidden" />
+            <input type="hidden" value="{!page2Name}" class="page-name" />
+            <div class="config-container col-1 c20w">
+              <div class="fltLeft mBtm">
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Activate this page</label>
+                
+                <input type="checkbox" id="page2-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page2-title" value="{!iPadApp.Page_2_Title__c}" placeholder="My Performance" />
+                </div>
+                <!-- <label>Dashboard Id:</label><input type="text" class="txt-input" id="dashboard-id" value="{!iPadApp.DashboardId__c}" /> -->
+              </div>
+              <div class="fltLeft">
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock">
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c26w">
+              <h3>Add Dashboard Images </h3>
+               <div class="lbBlock">
+              <input type="button" value="Add Image" id="add-dashboard-image-btn" class="add-dashboard-image-btn"/>
+              <div id="dashboard-list-container"> </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c22w">
+              <h3>Add Images </h3>
+               <div class="lbBlock">
+              <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              <div id="image-list-container"> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Create Account Page -->
+        <div id="edit-page3" class="edit-page">
+          <h3><span class="badge badge-info">3-5</span> Customize the Create Account Page</h3>
+          <p>In this page, you can give the customer a demo of the ease of Account creation in Salesforce.
+            Check the account fields that you would like to show in the app.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. 
+            You can customized how the page looks by adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_3_Active__c}" id="page3-active-hidden" />
+            <input type="hidden" value="{!page3Name}" class="page-name" />
+            <input type="hidden" value="{!iPadApp.AccountNumber__c}" id="account-number-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountType__c}" id="account-type-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountIndustry__c}" id="account-industry-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountRating__c}" id="account-rating-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPhone__c}" id="account-phone-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountAddress__c}" id="account-address-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountDescription__c}" id="account-description-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPersonName__c }" id="account-personname-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPersonBirthdate__c }" id="account-birthdate-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPersonEmail__c }" id="account-email-hidden" />
+
+            <div class="config-container col-1 c20w">
+              <div class='fltLeft mBtm'>
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Active this page</label>
+                <input type="checkbox" id="page3-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page3-title" value="{!iPadApp.Page_3_Title__c}" placeholder="Account Application" />
+                  </div>
+              </div>
+              <div class="fltLeft">
+                <h3>MenuIcon</h3>
+                 <div class="lbBlock">
+                 
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Account Fields To Show</h3>
+               <div class="lbBlock">
+              <label>Is Person Account:</label>
+              <input type="checkbox" id="account-personname" />
+              </div>
+               <div class="lbBlock">
+              <label>Birthdate:</label>
+              <input type="checkbox" id="account-birthdate" />
+              </div>
+               <div class="lbBlock">
+              <label>Email:</label>
+              <input type="checkbox" id="account-email" />
+              </div>
+               <div class="lbBlock">
+              <label>Phone:</label>
+              <input type="checkbox" id="account-phone" />
+              </div>
+               <div class="lbBlock">
+              <label>Billing Address:</label>
+              <input type="checkbox" id="account-address" />  
+              </div>
+               <div class="lbBlock">            
+              <label>Account Number:</label>
+              <input type="checkbox" id="account-number" />
+              </div>
+               <div class="lbBlock">
+              <label>Type:</label>
+              <input type="checkbox" id="account-type" />
+              </div>
+               <div class="lbBlock">
+              <label>Industry:</label>
+              <input type="checkbox" id="account-industry" />
+              </div>
+               <div class="lbBlock">
+              <label>Rating:</label>
+              <input type="checkbox" id="account-rating" />
+              </div>
+               <div class="lbBlock">
+              <label>Description:</label>
+              <input type="checkbox" id="account-description" />
+</div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Add Images</h3>
+               <div class="lbBlock">
+              <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              <div id="image-list-container"> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Learn Page -->
+        <div id="edit-page4" class="edit-page">
+          <h3><span class="badge badge-info">3-6</span> Customize the Learning Page</h3>
+          <p>In the Learning Page, you can give the customer a demo of the user accessing learning resources from the same application.
+            In this page, you can add Article links and Video links that the user can access.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. 
+            You can customized how the page looks by adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_4_Active__c}" id="page4-active-hidden" />
+            <input type="hidden" value="{!page4Name}" class="page-name" />
+            <div class="config-container col-1 c20w">
+              <div class='fltLeft mBtm'>
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Active this page</label>
+                <input type="checkbox" id="page4-active"/>
+               </div>
+                <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page4-title" value="{!iPadApp.Page_4_Title__c}" />
+                </div>
+              </div>
+              <div class='fltLeft'>
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock"><div id="footer-icon-container"> </div></div>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Add Article Links</h3>
+               <div class="lbBlock">
+               <input type="button" value="Add Article" id="add-article-btn" class="add-article-btn"/>
+              <div id="article-list-container"> </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Add Video Links</h3>
+               <div class="lbBlock"><input type="button" value="Add Video" id="add-video-btn" class="add-video-btn"/>
+              <div id="video-list-container"> </div></div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Add Images</h3>
+               <div class="lbBlock"><input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              <div id="image-list-container"> </div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Follow Up Page -->
+        <div id="edit-page5" class="edit-page">
+          <h3><span class="badge badge-info">3-7-1</span> Customize the Follow Up Page</h3>
+          <p>The Follow Up page shows how the user can view a list of tasks and events. This page also has a map for showing appointment locations.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_5_Active__c}" id="page5-active-hidden" />
+            <input type="hidden" value="{!page5Name}" class="page-name" />
+            <input type="hidden" value="{!iPadApp.FollowUpShowTasks__c}" id="followup-show-tasks-hidden" />
+            <input type="hidden" value="{!iPadApp.FollowUpShowEvents__c}" id="followup-show-events-hidden" />
+            <div class="config-container col-1 c20w">
+              <div class='fltLeft'>
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock"><label>Active this page</label>
+                <input type="checkbox" id="page5-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page5-title" value="{!iPadApp.Page_5_Title__c}" /></div>
+              </div>
+             
+              </div>
+              <div class="config-container col-1 c27w">
+             <div class='fltLeft'>
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock"><div id="footer-icon-container"> </div>
+                 </div>
+                 
+                 </div>
+              
+            </div>
+            
+            <div class="config-container col-1 c21w">
+              <h3>Activity List Details</h3>
+               <div class="lbBlock"><label>Show Tasks</label>
+              <input type="checkbox" id="followup-show-tasks"/>
+              </div>
+               <div class="lbBlock">
+              <label>Show Events</label>
+              <input type="checkbox" id="followup-show-events"/>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Map Details</h3>
+               <div class="lbBlock"><label>Height</label>
+              <input type="number" class="px-input" id="followup-map-height" value="{!iPadApp.FollowUpMapHeight__c}"/>
+              </div>
+               <div class="lbBlock">
+              <label>Width</label>
+              <input type="number" class="px-input" id="followup-map-width" value="{!iPadApp.FollowUpMapWidth__c}"/>
+              </div>
+               <div class="lbBlock">
+              <label>Zoom</label>
+              <input type="number" class="px-input" id="followup-map-zoom" value="{!iPadApp.FollowUpMapZoom__c}"/>
+             </div>
+            </div>
+            <!--
+                        <div class="config-container col-1 c20w">
+                            <h3>Add Images</h3><input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/> 
+                            <div id="image-list-container">
+                            </div>
+                        </div>
+                        -->
+          </div>
+          <div class="clear"></div>
+          <h3><span class="badge badge-info">3-7-2</span> Customize the Follow Up Contact Page</h3>
+          <p>On clicking the account name in the map, the Follow Up Contact page will be shown. It shows details about your contact, including their Activities, Profile, and Interests. Mock buttons are provided, and can be customized. </p>
+          <div>
+            <div class="config-container col-1 c21w">
+            
+             <div class="fltLeft mBtm">
+                <h3>Contact Details</h3>
+                <div class="contact-div">
+                   <div class="lbBlock"><label>Contact Twitter Handle: </label>
+                  <input type="text" class="txt-input" id="followup-contact-twitter" value="{!iPadApp.FollowUpContactTwitterHandle__c}" placeholder="@sampletwitterhandle"/>
+                  </div>
+                   <div class="lbBlock">
+                  <label>Contact Image URL: </label>
+                  <input type="text" class="txt-input image-url" id="followup-contact-image" value="{!iPadApp.FollowUpContactImageURL__c}" />
+                  <input type="button" value="Browse" class="image-browse" />
+                  </div>
+                </div>
+                </div>
+                
+                <div class="fltLeft ">
+                <h3>Contact Buttons</h3>
+                <div class="lbBlock">
+              
+              <label>Button 1 Label</label>
+              <input type="text" class="txt-input" id="followup-button1-label" value="{!iPadApp.FollowUpButton1Label__c}" placeholder="Send Email"/>
+           
+             </div>
+              <div class="lbBlock">
+              <label>Button 1 Background-color: </label>
+              <input type="color" class="color-input" id="followup-button1-bg-color" value="{!iPadApp.FollowUpButton1BgColor__c }" />
+              </div>
+               <div class="lbBlock">
+              <label>Button 1 Font-color: </label>
+              <input type="color" class="color-input" id="followup-button1-font-color" value="{!iPadApp.FollowUpButton1FontColor__c}" />
+              </div>
+               <div class="lbBlock">
+              <label>Button 2 Label</label>
+              <input type="text" class="txt-input" id="followup-button2-label" value="{!iPadApp.FollowUpButton2Label__c}" placeholder="Add Task"/>
+              </div>
+               <div class="lbBlock">
+              <label>Button 2 Background-color: </label>
+              <input type="color" class="color-input" id="followup-button2-bg-color" value="{!iPadApp.FollowUpButton2BgColor__c}" />
+             </div>
+              <div class="lbBlock">
+              <label>Button 2 Font-color: </label>
+              <input type="color" class="color-input" id="followup-button2-font-color" value="{!iPadApp.FollowUpButton2FontColor__c}" />
+           </div>
+                </div>
+                
+                
+            </div>
+            <div class="config-container col-1 c20w">
+              <div class="fltLeft mBtm">
+                <h3>Contact Activities</h3>
+                 <div class="lbBlock">
+                <label>Activities Label</label>
+                <input type="text" class="txt-input" id="followup-activities-label" value="{!iPadApp.FollowUpActivitiesLabel__c}" placeholder="ex: Marketing Activities"/>
+                </div>
+              </div>
+              <div class="fltLeft">
+                    <h3>Activity Demo Data</h3>
+                     <div class="lbBlock"> <input type="button" value="Add Activity" id="add-activity-btn" class="add-activity-btn"/> 
+                   <div id="activity-list-container">
+                    </div></div>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <div class="fltLeft mBtm">
+                <h3>Contact Interest Details</h3>
+                 <div class="lbBlock">
+                <label>Interest Label</label>
+                <input type="text" class="txt-input" id="followup-interest-label" value="{!iPadApp.FollowUpInterestLabel__c}" placeholder="ex: Product Interests"/>
+                </div>
+              </div>
+              <div class="fltLeft">
+                    <h3>Interest Demo Data</h3>
+                     <div class="lbBlock">
+                     <input type="button" value="Add Interest" id="add-interest-btn" class="add-interest-btn"/></div> 
+                    <div id="interest-list-container"></div>
+                    
+              </div>
+            </div>
+            <div class="config-container col-1 c21w">
+              <div class="fltLeft mBtm">
+                <h3>Contact Profile Details</h3>
+                 <div class="lbBlock"><label>Profile Label</label>
+                <input type="text" class="txt-input" id="followup-profile-label" value="{!iPadApp.FollowUpProfileLabel__c}" placeholder="ex: Social Profile"/>
+                </div>
+              </div>
+              <div class="fltLeft">              
+                    <h3>Profile Demo Data</h3>
+                     <div class="lbBlock">
+                     <input type="button" value="Add Profile" id="add-profile-btn" class="add-profile-btn"/> </div>
+                    <div id="profile-list-container">
+                    
+                    </div>
+              </div>
+            </div>
+           
+          </div>
+        </div>
+        <!-- Ask Page -->
+        <div id="edit-page6" class="edit-page">
+          <h3><span class="badge badge-info">3-8</span> Customize this Page</h3>
+          <p>For demo scenarios that are not covered in this app, just enter the name of the Visualforce page, and it will be accessed from the app.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. </p>
+          <div>
+           <div class="lbBlock">
+            <input type="hidden" value="{!iPadApp.Page_6_Active__c}" id="page6-active-hidden" />
+            <input type="hidden" value="{!page6Name}" class="page-name" />
+            </div>
+            <div class="config-container col-1 c20w">
+              <div class='fltLeft mBtm'>
+                 <div class="lbBlock"><h3>Customize the Page</h3>
+                <label>Active this page</label>
+                <input type="checkbox" id="page6-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page6-title" value="{!iPadApp.Page_6_Title__c}" />
+                </div>
+                 <div class="lbBlock">
+                <label>VF Page Name:</label>
+                <input type="text" class="txt-input" id="vf-name" value="{!iPadApp.VisualforcePageName__c}" />
+                </div>
+              </div>
+              
+              
+            </div>
+            
+            
+            
+            
+             <div class="config-container col-1 c20w" >
+            
+            <div class='fltLeft'>
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock">
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+              </div>
+            <div class="config-container col-1 c20w" >
+              <h3>VF Page Position</h3>
+               <div class="lbBlock">
+              <label>Left:</label>
+              <input type="number" class="px-input" id="vf-locX" value="{!iPadApp.VisualforcePageLocationX__c}" />
+              </div>
+               <div class="lbBlock">
+              <label>Top:</label>
+              <input type="number" class="px-input" id="vf-locY" value="{!iPadApp.VisualforcePageLocationY__c}" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- settings holder -->
+    </div>
+    <!-- settings main div -->
+  </div>
+  <!-- ALL -->
+</apex:page>

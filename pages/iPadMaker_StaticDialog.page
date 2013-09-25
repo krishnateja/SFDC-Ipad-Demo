@@ -1,0 +1,73 @@
+<apex:page controller="iPadMakerSettingsController" showHeader="false">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+    $ = jQuery.noConflict();
+    $(function() {
+        initStaticResource();
+    });
+    function StaticResource(staticResourceObj){
+        this.ContentType = staticResourceObj.ContentType || '';
+        this.Name = staticResourceObj.Name || '';
+        this.NamespacePrefix = staticResourceObj.NamespacePrefix || '';
+    }
+
+    StaticResource.prototype.toHTML = function(){
+        return '<tr>'
+            + '<td><a class="static-link" data-name="' + this.Name + '" data-namespace="' + this.NamespacePrefix + '">' 
+                + this.Name + '</a>'
+            + '</td>'
+            + '<td>' + this.NamespacePrefix + '</td>' 
+            + '<td>' + this.ContentType + '</td>'
+            + '<td><img src="/resource/' + (this.NamespacePrefix ? this.NamespacePrefix +'_' : '') 
+                + this.Name + '" width="100px"  /></td>'
+            + '</tr>';
+    }
+
+    function initStaticResource(){
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryStaticResource}', 
+            function(result){
+                var dialogContents = "";
+                $.each(result, function(){
+                    var resource = new StaticResource(this);
+                    console.log(this);
+                    dialogContents += resource.toHTML();
+                });
+                $('#static-dialog').append(dialogContents);
+                $('.static-link').on('click', function(){
+                    var returnValue = '';
+                    if($(this).attr('data-namespace')){
+                        returnValue = $(this).attr('data-namespace') + '_';
+                    }
+                    returnValue += $(this).attr('data-name');                    
+                    
+                    window.returnValue = returnValue;
+                    window.close();
+                });
+           }
+       );
+    }
+</script>
+<style>
+    a{
+        cursor: pointer;
+        text-decoration: underline !important;
+    }
+    table{
+        margin: 20px;
+        width: 600px;    
+        border-collapse: collapse;
+    }
+    th, td{
+        padding: 5px;    
+        border: 1px solid #aaa;
+    }
+    th{
+        background: #eee;    
+    }    
+
+</style>
+<table id="static-dialog">
+    <tr><th>Name</th><th>Namespace Prefix</th><th>Content Type</th><th>Preview</th>
+    </tr>
+</table>
+</apex:page>

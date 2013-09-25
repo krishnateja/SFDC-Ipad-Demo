@@ -1,0 +1,361 @@
+<apex:page standardStylesheets="false" controller="iPadMakerSettingsController">
+<script>
+    function IPadApplication__c(iPadObj){
+        this.Id = iPadObj.Id;
+        this.Name = iPadObj.Name;
+        this.IsTwoCol__c = iPadObj.IsTwoCol__c;
+        this.AboutText__c = iPadObj.AboutText__c;
+        this.ApplicationURL__c = iPadObj.ApplicationURL__c || '/apex/ipadDemo';
+        this.LoginBodyColor__c = iPadObj.LoginBodyColor__c;
+        this.LoginIsUseImage__c = iPadObj.LoginIsUseImage__c;
+        this.LoginBgImage__c = iPadObj.LoginBgImage__c;
+        this.LoginBgImageURL__c = iPadObj.LoginBgImageURL__c;
+        this.LogoURL__c = iPadObj.LogoURL__c;
+        this.BodyBgImage__c = iPadObj.BodyBgImage__c;
+        this.BodyBgImageURL__c = iPadObj.BodyBgImageURL__c;
+        this.BodyIsUseImage__c = iPadObj.BodyIsUseImage__c;
+        this.BodyColor__c = iPadObj.BodyColor__c;
+        this.FooterColor__c = iPadObj.FooterColor__c; 
+        this.HeaderColor__c = iPadObj.HeaderColor__c;
+        this.FooterFontColor__c = iPadObj.FooterFontColor__c; 
+        this.HeaderFontColor__c = iPadObj.HeaderFontColor__c;
+        this.Home_Page_Title__c = iPadObj.Home_Page_Title__c;
+        this.ChatterId__c = iPadObj.ChatterId__c;
+        this.ChatterPositionX__c = iPadObj.ChatterPositionX__c;
+        this.ChatterPositionY__c = iPadObj.ChatterPositionY__c;
+        this.DashboardId__c = iPadObj.DashboardId__c;
+        this.DashboardPositionX__c = iPadObj.DashboardPositionX__c;
+        this.DashboardPositionY__c = iPadObj.DashboardPositionY__c;
+        this.VisualforcePageName__c = iPadObj.VisualforcePageName__c;
+        this.VisualforcePageLocationX__c = iPadObj.VisualforcePageLocationX__c;
+        this.VisualforcePageLocationY__c = iPadObj.VisualforcePageLocationY__c;
+
+        this.Page_1_Title__c = iPadObj.Page_1_Title__c;
+        this.Page_2_Title__c = iPadObj.Page_2_Title__c;
+        this.Page_3_Title__c = iPadObj.Page_3_Title__c;        
+        this.Page_4_Title__c = iPadObj.Page_4_Title__c;
+        this.Page_5_Title__c = iPadObj.Page_5_Title__c;
+        this.Page_6_Title__c = iPadObj.Page_6_Title__c;
+        
+        this.Page_1_Active__c = iPadObj.Page_1_Active__c;
+        this.Page_2_Active__c = iPadObj.Page_2_Active__c;
+        this.Page_3_Active__c = iPadObj.Page_3_Active__c;        
+        this.Page_4_Active__c = iPadObj.Page_4_Active__c;
+        this.Page_5_Active__c = iPadObj.Page_5_Active__c;
+        this.Page_6_Active__c = iPadObj.Page_6_Active__c;
+        
+        this.LoginLabelColor__c = iPadObj.LoginLabelColor__c,
+        this.LoginButtonColor__c = iPadObj.LoginButtonColor__c,
+        this.LoginButtonLabelColor__c = iPadObj.LoginButtonLabelColor__c,
+        this.Password__c = iPadObj.Password__c;
+        this.Username__c = iPadObj.Username__c ;        
+        this.AccountNumber__c = iPadObj.AccountNumber__c;
+        this.AccountType__c = iPadObj.AccountType__c;
+        this.AccountIndustry__c = iPadObj.AccountIndustry__c;
+        this.AccountRating__c = iPadObj.AccountRating__c;
+        this.AccountPhone__c = iPadObj.AccountPhone__c;
+        this.AccountAddress__c = iPadObj.AccountAddress__c;
+        this.AccountDescription__c = iPadObj.AccountDescription__c;
+        this.AccountPersonName__c = iPadObj.AccountPersonName__c;
+        this.AccountPersonBirthdate__c = iPadObj.AccountPersonBirthdate__c;
+        this.AccountPersonEmail__c = iPadObj.AccountPersonEmail__c;
+        this.FollowUpMapHeight__c =  iPadObj.FollowUpMapHeight__c;
+        this.FollowUpMapWidth__c = iPadObj.FollowUpMapWidth__c;
+        this.FollowUpMapZoom__c = iPadObj.FollowUpMapZoom__c;
+        this.FollowUpShowTasks__c = iPadObj.FollowUpShowTasks__c;
+        this.FollowUpShowEvents__c = iPadObj.FollowUpShowEvents__c;
+        this.FollowUpActivitiesLabel__c = iPadObj.FollowUpActivitiesLabel__c;
+        this.FollowUpInterestLabel__c = iPadObj.FollowUpInterestLabel__c;        
+        this.FollowUpProfileLabel__c = iPadObj.FollowUpProfileLabel__c;
+        this.FollowUpButton1BgColor__c = iPadObj.FollowUpButton1BgColor__c;
+        this.FollowUpButton1FontColor__c = iPadObj.FollowUpButton1FontColor__c;
+        this.FollowUpButton1Label__c = iPadObj.FollowUpButton1Label__c;
+        this.FollowUpButton2BgColor__c = iPadObj.FollowUpButton2BgColor__c;
+        this.FollowUpButton2FontColor__c = iPadObj.FollowUpButton2FontColor__c;
+        this.FollowUpButton2Label__c = iPadObj.FollowUpButton2Label__c;
+        this.FollowUpContactImageURL__c = iPadObj.FollowUpContactImageURL__c;
+        this.FollowUpContactTwitterHandle__c = iPadObj.FollowUpContactTwitterHandle__c;
+    }
+
+    function ApplicationLink__c(linkObj){
+        this.Id = linkObj.Id || '';
+        this.Name = linkObj.Name || '';
+        this.IsArticle__c = linkObj.IsArticle__c || false;
+        this.IsVideo__c = linkObj.IsVideo__c || false;
+        this.PageType__c = linkObj.PageType__c;
+        this.URL__c = linkObj.URL__c || '';    
+    }
+
+    ApplicationLink__c.prototype.toArticleLinkHTML = function(){
+        return '<div class="link-div property-container-div"><input type="button" value="-" class="link-article-remove image-remove-css">'
+                + '<input type="hidden" class="link-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="link-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="link-isvideo" value="' + this.IsVideo__c + '" />'
+                + '<input type="hidden" class="link-isarticle" value="' + this.IsArticle__c + '" />'
+                + '<div><label>Label: </label><input class="txt-input link-name" value="' + this.Name+ '" /></div>'
+                + '<div><label>URL: </label><input class="txt-input link-url" value="' + this.URL__c + '" /></div>'
+              + '</div>';
+    }
+
+    ApplicationLink__c.prototype.toVideoLinkHTML = function(){
+        return '<div class="link-div property-container-div"><input type="button" value="-" class="link-video-remove image-remove-css">'
+                + '<input type="hidden" class="link-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="link-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="link-isvideo" value="' + this.IsVideo__c + '" />'
+                + '<input type="hidden" class="link-isarticle" value="' + this.IsArticle__c + '" />'
+                + '<div><label>Label: </label><input class="txt-input link-name" value="' + this.Name+ '" /></div>'
+                + '<div><label>URL: </label><input class="txt-input link-url" value="' + this.URL__c + '" /></div>'
+              + '</div>';
+    }
+
+    ApplicationLink__c.prototype.assignNewId = function(){
+        var $elem;
+        if(this.PageType__c=="{!loginPageName}"){
+            $elem = $('#edit-loginPage');
+        }else if(this.PageType__c=="{!homePageName}"){
+            $elem = $('#edit-homePage');
+        }else if(this.PageType__c=="{!page1Name}"){
+            $elem = $('#edit-page1');
+        }else if(this.PageType__c=="{!page2Name}"){
+            $elem = $('#edit-page2');
+        }else if(this.PageType__c=="{!page3Name}"){
+            $elem = $('#edit-page3');
+        }else if(this.PageType__c=="{!page4Name}"){
+            $elem = $('#edit-page4');
+        }else if(this.PageType__c=="{!page5Name}"){
+            $elem = $('#edit-page5');
+        }else if(this.PageType__c=="{!page6Name}"){
+            $elem = $('#edit-page6');
+        }
+
+        if(this.IsArticle__c){
+            $elem.find('#article-list-container .link-id:hidden[value=""]').first().val(this.Id);        
+        }else if(this.IsVideo__c){
+            $elem.find('#video-list-container .link-id:hidden[value=""]').first().val(this.Id);
+        }
+    }
+
+    function ApplicationFollowUpItem__c(followUpObj){
+        this.Id = followUpObj.Id || '';
+        this.ActivityDate__c = followUpObj.ActivityDate__c || '';
+        this.CheckboxValue__c = followUpObj.CheckboxValue__c || false;
+        this.IconURL__c = followUpObj.IconURL__c || '';
+        this.IsCheckbox__c = followUpObj.IsCheckbox__c || false;
+        this.Label__c = followUpObj.Label__c || '';
+        this.PageType__c = followUpObj.PageType__c;
+        this.TextValue__c = followUpObj.TextValue__c || '';
+        this.Type__c = followUpObj.Type__c;
+        this.SortNumber__c = followUpObj.SortNumber__c || 0;
+    }
+
+    ApplicationFollowUpItem__c.prototype.assignNewId = function(){
+        var $elem;
+        if(this.PageType__c=="{!loginPageName}"){
+            $elem = $('#edit-loginPage');
+        }else if(this.PageType__c=="{!homePageName}"){
+            $elem = $('#edit-homePage');
+        }else if(this.PageType__c=="{!page1Name}"){
+            $elem = $('#edit-page1');
+        }else if(this.PageType__c=="{!page2Name}"){
+            $elem = $('#edit-page2');
+        }else if(this.PageType__c=="{!page3Name}"){
+            $elem = $('#edit-page3');
+        }else if(this.PageType__c=="{!page4Name}"){
+            $elem = $('#edit-page4');
+        }else if(this.PageType__c=="{!page5Name}"){
+            $elem = $('#edit-page5');
+        }else if(this.PageType__c=="{!page6Name}"){
+            $elem = $('#edit-page6');
+        }
+
+        if(this.Type__c == "{!followUpActivity}"){
+            $elem.find('#activity-list-container .followup-id:hidden[value=""]').first().val(this.Id);
+        }else if(this.Type__c == "{!followUpInterest}"){
+            $elem.find('#interest-list-container .followup-id:hidden[value=""]').first().val(this.Id);
+        }else if(this.Type__c == "{!followUpProfile}"){
+            $elem.find('#profile-list-container .followup-id:hidden[value=""]').first().val(this.Id);
+        }
+
+    }
+
+    ApplicationFollowUpItem__c.prototype.toActivityHTML = function(){
+        return '<div class="followup-div property-container-div">'
+                + '<input type="button" value="-" class="followup-remove image-remove-css">'
+                + '<input type="hidden" class="followup-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="followup-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="followup-type" value="' + this.Type__c + '" />'
+                
+                + '<div class="lbBlock"><label>Activity Name: </label><input type="text" class="txt-input followup-label" value="' + this.Label__c + '" /></div>'
+                + '<div class="lbBlock"><label>Activity Date: </label><input type="text" class="txt-input followup-activity-date" value="' + this.ActivityDate__c  + '" /></div>'
+                + '<div class="lbBlock"><label>Sort Number: </label><input type="number" class="px-input followup-sort-number" value="' + this.SortNumber__c + '" /></div>'
+                + '<div class="lbBlock"><label>Icon URL: </label></div>'
+                + '<div class="browseimgDiv">'
+                    + '<input type="text" class="txt-input followup-icon-url image-url" value="' + this.IconURL__c + '" />'
+                    + '<input type="button" value="Browse" class="image-browse">'
+                + '</div>'
+              + '</div>';
+    }
+
+    ApplicationFollowUpItem__c.prototype.toInterestHTML = function(){
+        return '<div class="followup-div  property-container-div"><input type="button" value="-" class="followup-remove image-remove-css">'
+                + '<input type="hidden" class="followup-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="followup-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="followup-type" value="' + this.Type__c + '" />'
+                + '<input type="hidden" class="followup-ischeckbox" value="true" />'
+                + '<input type="hidden" class="followup-checkbox-value-hidden" value="' + this.CheckboxValue__c + '" />'
+
+                + '<div class="lbBlock"><label>Interest Label: </label><input type="text" class="txt-input followup-label" value="' + this.Label__c + '" /></div>'
+                + '<div class="lbBlock"><label>Check if demo user is interested: </label><input type="checkbox" class="followup-checkbox-value"'+ (this.CheckboxValue__c ? 'checked' : '' ) +' /></div>'
+                + '<div class="lbBlock"><label>Sort Number: </label><input type="number" class="px-input followup-sort-number" value="' + this.SortNumber__c + '" /></div>'
+              + '</div>';
+    }
+
+    ApplicationFollowUpItem__c.prototype.toProfileHTML = function(){
+        return '<div class="followup-div  property-container-div"><input type="button" value="-" class="followup-remove image-remove-css">'
+                + '<input type="hidden" class="followup-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="followup-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="followup-type" value="' + this.Type__c + '" />'
+
+                + '<div class="lbBlock"><label>Profile Label: </label><input type="text" class="txt-input followup-label" value="' + this.Label__c + '" /></div>'
+                + '<div class="lbBlock"><label>Value: </label><input type="text" class="txt-input followup-text-value" value="' + this.TextValue__c + '" /></div>'
+                + '<div class="lbBlock"><label>Sort Number: </label><input type="number" class="px-input followup-sort-number" value="' + this.SortNumber__c + '" /></div>'
+                + '<div class="lbBlock"><label>Icon URL: </label></div>'
+                + '<div class="browseimgDiv">'
+                    + '<input type="text" class="txt-input followup-icon-url image-url" value="' + this.IconURL__c + '" />'
+                    + '<input type="button" value="Browse" class="image-browse">'
+                + '</div>'
+              + '</div>';
+
+    }
+
+
+    function ApplicationImage__c(imageObj){
+        this.Id = imageObj.Id || '';
+        this.Height__c = imageObj.Height__c || 60;
+        this.ImageURL__c = imageObj.ImageURL__c || '';
+        this.LocationX__c = imageObj.LocationX__c || 20;
+        this.LocationY__c = imageObj.LocationY__c || 20;
+        this.Width__c = imageObj.Width__c || 100;
+        this.Label__c = imageObj.Label__c || '';
+        this.LabelFontSize__c = imageObj.LabelFontSize__c || 12;
+        this.LabelLocationX__c = imageObj.LabelLocationX__c || 0;
+        this.LabelLocationY__c = imageObj.LabelLocationY__c || 0;
+        this.PageType__c = imageObj.PageType__c;
+        this.IsFooterImage__c = imageObj.IsFooterImage__c || false;
+        this.IsDashboardImage__c = imageObj.IsDashboardImage__c || false;
+        this.DashboardFromURL__c = imageObj.DashboardFromURL__c || false;        
+        this.DashboardURL__c = imageObj.DashboardURL__c || '';
+        this.ChartType__c = imageObj.ChartType__c || '';
+        this.ReportId__c = imageObj.ReportId__c || '';
+        this.DasboardValueLabel__c = imageObj.DasboardValueLabel__c || '';
+        this.DasboardLegendLabel__c = imageObj.DasboardLegendLabel__c || '';
+    }
+
+    ApplicationImage__c.prototype.assignNewId = function(){
+        var $elem;
+        if(this.PageType__c=="{!loginPageName}"){
+            $elem = $('#edit-loginPage');
+        }else if(this.PageType__c=="{!homePageName}"){
+            $elem = $('#edit-homePage');
+        }else if(this.PageType__c=="{!page1Name}"){
+            $elem = $('#edit-page1');
+        }else if(this.PageType__c=="{!page2Name}"){
+            $elem = $('#edit-page2');
+        }else if(this.PageType__c=="{!page3Name}"){
+            $elem = $('#edit-page3');
+        }else if(this.PageType__c=="{!page4Name}"){
+            $elem = $('#edit-page4');
+        }else if(this.PageType__c=="{!page5Name}"){
+            $elem = $('#edit-page5');
+        }else if(this.PageType__c=="{!page6Name}"){
+            $elem = $('#edit-page6');
+        }
+        
+        if(!this.IsFooterImage__c && !this.IsDashboardImage__c){
+            $elem.find('#image-list-container .image-div:not([data-removed]) .image-id:hidden[value=""]').first().val(this.Id);
+        }else if(this.IsFooterImage__c){
+            console.log('assigning new footer id : ' + this.Id);
+            $elem.find('#footer-icon-container .image-id:hidden[value=""]').first().val(this.Id);        
+        }else if(this.IsDashboardImage__c){
+            console.log('assigning new dashboard id : ' + this.Id);
+            $elem.find('#dashboard-list-container .image-id:hidden[value=""]').first().val(this.Id);
+        }
+    }
+
+    ApplicationImage__c.prototype.toDashboardHTML = function(){
+        return '<div class="image-div  property-container-div dashboard-container"><input type="button" value="-" class="image-dashboard-remove image-remove-css">'
+                + '<input type="hidden" class="image-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="image-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="image-isfooter" value="' + this.IsFooterImage__c + '" />'
+                + '<input type="hidden" class="image-isdashboard" value="' + this.IsDashboardImage__c + '" />'
+                + '<input type="hidden" class="image-isdashboardfromurl" value="' + this.DashboardFromURL__c + '" />'
+                + '<input type="hidden" class="image-charttypehidden" value="' + this.ChartType__c + '" />'
+                + '<div class="lbBlock"><label>Dashboard Label: </label><input class="txt-input image-label" value="' + this.Label__c + '" /></div>'
+                + '<div><div class="radio-choice"><input type="radio" name="' + this.Id + '" class="dashboard-chart-report" ' + (this.DashboardFromURL__c ? '' : 'checked') + ' /><label>Create Chart from Report:</label></div>'
+                + '<div class="lbBlock">'
+                    + '<label>Report Id: </label><input class="txt-input image-report" value="' + this.ReportId__c + '" />'
+                    + '<label>Chart Type: </label>'
+                    + '<select class="txt-input image-chart-type">'
+                        + '<option value="pie" ' + (this.ChartType__c == "pie" ? 'selected' : '') + '>pie</option>'
+                        + '<option value="bar" ' + (this.ChartType__c == "bar" ? 'selected' : '') + '>bar</option>'
+                        + '<option value="line" ' + (this.ChartType__c == "line" ? 'selected' : '') + '>line</option>'
+                        + '<option value="column" ' + (this.ChartType__c == "column" ? 'selected' : '') + '>column</option>'
+                        + '<option value="gauge" ' + (this.ChartType__c == "gauge" ? 'selected' : '') + '>gauge</option>'
+                        + '<option value="funnel" ' + (this.ChartType__c == "funnel" ? 'selected' : '') + '>funnel</option>'
+                        + '<option value="scatter" ' + (this.ChartType__c == "scatter" ? 'selected' : '') + '>scatter</option>'
+                        + '<option value="donut" ' + (this.ChartType__c == "donut" ? 'selected' : '') + '>donut</option>'
+                    + '</select>'
+                    + '<label>Legend Label: </label><input class="txt-input image-dashboard-legend-label" value="' + this.DasboardLegendLabel__c + '" />'
+                    + '<label>Value Label: </label><input class="txt-input image-dashboard-value-label" value="' + this.DasboardValueLabel__c + '" />'
+                + '</div></div>'
+                + '<div><div class="radio-choice"><input type="radio" name="' + this.Id + '" class="dashboard-chart-image" ' + (this.DashboardFromURL__c ? 'checked' : '') + ' /><label>Use Chart from Image URL :</label></div>'
+                + '<div class="lbBlock">'
+                    + '<label>Image URL: </label><input class="txt-input image-dashboard-url" value="' + this.DashboardURL__c + '" />'
+                + '</div></div>'    
+                + '<div class="col-mixed">'
+                    + '<div class="lbBlock"><label>Height (px): </label><input type="number" class="px-input image-height" value="' + this.Height__c  + '" /></div>'
+                    + '<div class="lbBlock"><label>Width (px): </label><input type="number" class="px-input image-width" value="' + this.Width__c + '" /></div>'
+                + '</div>'
+              + '</div>';
+    }
+
+    
+    ApplicationImage__c.prototype.toHTML = function(){
+        return '<div class="image-div  property-container-div">'
+                + '<input type="hidden" class="image-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="image-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="image-isfooter" value="' + this.IsFooterImage__c + '" />'
+                + '<input type="hidden" class="image-isdashboard" value="' + this.IsDashboardImage__c + '" />'
+                + '<div class="lbBlock"><label>Image URL: </label></div>'
+                + '<div class="browseimgDiv">'
+                    + '<input class="txt-input image-url" value="' + this.ImageURL__c + '" />'
+                    + '<input type="button" value="Browse" class="image-browse">'
+                    + '<input type="button" value="-" class="image-remove image-remove-css">'
+                + '</div>'
+                + '<div class="col-mixed">'
+                    + '<div class="lbBlock"><label>Height (px): </label><input type="number" class="px-input image-height" value="' + this.Height__c  + '" /></div>'
+                    + '<div class="lbBlock"><label>Width (px): </label><input type="number" class="px-input image-width" value="' + this.Width__c + '" /></div>'
+                + '</div>'
+                + '<div class="col-mixed">'
+                    + '<div class="lbBlock"><label>Left (px): </label><input type="number" class="px-input image-locX" value="' + this.LocationX__c + '" /></div>'
+                    + '<div class="lbBlock"><label>Top (px): </label><input type="number" class="px-input image-locY" value="' + this.LocationY__c + '" /></div>'
+                + '</div>'
+              + '</div>';
+    }
+
+    ApplicationImage__c.prototype.toFooterHTML = function(){
+        return '<div class="image-div">'
+                + '<input type="hidden" class="image-id" value="' + this.Id + '" />'
+                + '<input type="hidden" class="image-pagetype" value="' + this.PageType__c + '" />'
+                + '<input type="hidden" class="image-isfooter" value="' + this.IsFooterImage__c + '" />'
+                + '<input type="hidden" class="image-isdashboard" value="' + this.IsDashboardImage__c + '" />'
+                + '<label>Label: </label><input type="text" class="txt-input image-label" value="' + this.Label__c + '" />'
+                + '<label>Image URL: </label>'
+                + '<input class="txt-input image-url" value="' + this.ImageURL__c + '" />'
+                + '<input type="button" value="Browse" class="image-browse">'
+
+              + '</div>';
+    }
+
+</script>
+</apex:page>

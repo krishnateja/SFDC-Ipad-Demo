@@ -1,0 +1,61 @@
+<apex:component controller="IPadDemoComponentController" id="viewAccountPageComponent" allowDML="true" >
+    <apex:attribute name="compName" type="String" required="true" assignTo="{!currentComponent}" description=""/>
+    <apex:attribute name="appId" type="String" required="true" assignTo="{!applicationId}" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>    
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <apex:attribute name="accountNumber" type="Boolean" required="true" description="" assignTo="{!accountNumberCtrl}"/>
+    <apex:attribute name="accountType" type="Boolean" required="true" description="" assignTo="{!accountTypeCtrl}"/>
+    <apex:attribute name="accountIndustry" type="Boolean" required="true" description="" assignTo="{!accountIndustryCtrl}"/>
+    <apex:attribute name="accountRating" type="Boolean" required="true" description="" assignTo="{!accountRatingCtrl}"/>
+    <apex:attribute name="accountPhone" type="Boolean" required="true" description="" assignTo="{!accountPhoneCtrl}"/>
+    <apex:attribute name="accountAddress" type="Boolean" required="true" description="" assignTo="{!accountAddressCtrl}"/>
+    <apex:attribute name="accountDescription" type="Boolean" required="true" description="" assignTo="{!accountDescriptionCtrl}"/>
+    <apex:attribute name="accountPersonName" type="Boolean" required="true" description="" assignTo="{!accountPersonNameCtrl}"/>
+    <apex:attribute name="accountBirthdate" type="Boolean" required="true" description="" assignTo="{!accountBirthdateCtrl}"/>
+    <apex:attribute name="accountEmail" type="Boolean" required="true" description="" assignTo="{!accountEmailCtrl}"/>
+    
+    <style>
+        #dPage5-2{
+            background: {!bodyColor};
+            background-image: url({!bgImage});
+        }
+        #dPage5-2 .account-datatable{
+            background: rgba(255, 255, 255, 0.5);
+            border-collapse: collapse;
+        }
+        #dPage5-2 .account-datatable th{
+            font-size: 14px;    
+            font-weight:bold; 
+            border: 1px solid #efefef;
+            padding: 10px 5px; 
+             background: rgba(255, 255, 255, 0.5);
+        }
+        #dPage5-2 .account-datatable td{
+            text-shadow: none;
+            font-size: 12px;     
+            border: 1px solid #efefef;
+            padding: 10px 5px;     
+        }
+        .ipad-content table tr td{
+            padding:5px;
+        }
+    </style>
+
+    <div data-role="content" class="ipad-content"> 
+        <apex:dataTable value="{!accountList}" var="accountListVar" styleClass="account-datatable" id="account-datatable">
+            <apex:column rendered="{!accountPersonName}" value="{!accountListVar.Name}" headerValue="Name"/>
+            <apex:column rendered="{!accountPhone}" value="{!accountListVar.Phone}" headerValue="Phone"/>
+            <apex:column rendered="{!accountAddress}" 
+                value="{!accountListVar.BillingStreet} {!accountListVar.BillingCity} {!accountListVar.BillingState} {!accountListVar.BillingCountry}"  
+                headerValue="Address"/>
+            <apex:column rendered="{!accountNumber}" value="{!accountListVar.AccountNumber}" headerValue="Account Number"/>
+            <apex:column rendered="{!accountType}" value="{!accountListVar.Type}"  headerValue="Type"/>
+            <apex:column rendered="{!accountIndustry}" value="{!accountListVar.Industry}"  headerValue="Industry"/>
+            <apex:column rendered="{!accountRating}" value="{!accountListVar.Rating}"  headerValue="Rating"/>
+            <apex:column rendered="{!accountDescription}" value="{!accountListVar.Description}" headerValue="Description"/>
+        </apex:dataTable>
+    
+    </div> 
+
+
+</apex:component>

@@ -1,0 +1,127 @@
+<apex:component controller="IPadDemoComponentController" id="homePageComponent" >
+    <apex:attribute name="compName" type="String" required="true" assignTo="{!currentComponent}" description=""/>
+    <apex:attribute name="appId" type="String" required="true" assignTo="{!applicationId}" description=""/>
+    <apex:attribute name="appName" type="String" required="true" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>    
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <apex:attribute name="aboutTitle" type="String" required="true" description=""/>
+    <apex:attribute name="aboutText" type="String" required="true" description=""/>
+    <apex:attribute name="logoURL" type="String" required="true" description=""/>  
+    <apex:attribute name="page1IsActive" type="Boolean" required="true" assignTo="{!page1Active}" description=""/>
+    <apex:attribute name="page2IsActive" type="Boolean" required="true" assignTo="{!page2Active}" description=""/>
+    <apex:attribute name="page3IsActive" type="Boolean" required="true" assignTo="{!page3Active}" description=""/>
+    <apex:attribute name="page4IsActive" type="Boolean" required="true" assignTo="{!page4Active}" description=""/>
+    <apex:attribute name="page5IsActive" type="Boolean" required="true" assignTo="{!page5Active}" description=""/>
+    <apex:attribute name="page6IsActive" type="Boolean" required="true" assignTo="{!page6Active}" description=""/>            
+    <apex:attribute name="page7IsActive" type="Boolean" required="true" assignTo="{!page7Active}" description=""/>
+    <apex:attribute name="page8IsActive" type="Boolean" required="true" assignTo="{!page8Active}" description=""/>                
+    <style>
+        #dPage2{
+            background: {!bodyColor};
+            background-image: url({!bgImage});
+        }
+        #dPage2 .ipad-content{
+            position:relative;
+            top:100px;
+            width:450px;
+        }
+        #dPage2 .headerDiv{
+            margin-bottom: -100px;
+            padding-bottom: 0;
+            padding-top: 15px;
+            padding-left: 30px;
+        }
+        #dPage2 .logo{
+            width: auto; 
+            height: 100px; 
+            float: left;
+        }
+        #dPage2 h1{
+            display: block;
+            font-size: 26px;
+            float: left;
+            margin-left: 25px;
+            margin-top: 30px;
+        }
+
+        #dPage2 .menu-icon-holder{
+            float: left;
+            display: block;
+            text-align: center;
+            margin: 15px 20px;
+            height: 130px;
+            width: 180px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px 0;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 15px;
+            text-decoration: none;
+        }
+        #dPage2 .menu-icon-holder img{
+            width: 100px;
+            height: 100px;
+            display: block;
+            margin: 0 40px 10px;
+        }
+        #dPage2 .menu-icon-holder label{
+            text-shadow: none;    
+            color: #444;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .aboutDiv{
+        padding:15px;
+        margin-left:40px;
+        width:470px;
+        height:490px;
+        float:left;
+        background-color:#fff;
+        position:relative;
+        top:130px;
+        border-radius:15px;
+        opacity:0.6;
+         filter:alpha(opacity=60); /* For IE8 and earlier */
+        }
+        
+        .appTitle{
+        font-weight:bold;
+        
+        font-size:22px;
+        
+        }
+    </style>
+    
+    <div class="headerDiv">
+        <image src="{!logoURL}" class="logo" />
+        <h1>{!appName}</h1>
+        <div class="clear"></div>
+    </div>
+
+        
+    <div class="aboutDiv">    
+        <h2 class="appTitle">{!aboutTitle}</h2> 
+        <textarea disabled="true" style="resize:none" >{!aboutText}
+        </textarea>    
+    </div>
+    <div data-role="content" class="ipad-content"> 
+        <!-- For the Menu -->
+        <apex:repeat value="{!menuList}" var="menuListVar">
+            <a href="{!menuListVar.FooterImageURL__c}" class="menu-icon-holder" data-transition="slide">
+                <image src="{!menuListVar.ImageURL__c}" />
+                <label>{!menuListVar.Label__c}</label>
+            </a>
+        </apex:repeat>
+
+        <!-- For other images -->
+        <apex:repeat value="{!imageList}" var="homeImageListVar">
+            <image src="{!homeImageListVar.ImageURL__c}" 
+                style="position: relative;
+                        left: {!homeImageListVar.LocationX__c}px;
+                        top: {!homeImageListVar.LocationY__c}px;
+                        height: {!homeImageListVar.Height__c}px;
+                        width: {!homeImageListVar.Width__c}px;" />
+        </apex:repeat>
+    </div> 
+
+</apex:component>

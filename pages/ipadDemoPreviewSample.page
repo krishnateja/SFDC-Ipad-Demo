@@ -1,0 +1,221 @@
+<apex:page sidebar="false" showheader="false" controller="IPadDemoController">
+
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<!--<link href="{!$Resource.iPhoneApp}" rel="apple-touch-icon" />-->
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<link rel="stylesheet" href="{!URLFOR($Resource.jQMFramework, '/JqCss.css')}" type="text/css" media="screen" />
+<script type="text/javascript" src="{!URLFOR($Resource.jQMFramework, '/Jquery.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.jQMFramework, '/JqMobile.js')}"></script>
+<apex:stylesheet value="{!$Page.mobileCSS}"/>
+<title>Mobile App</title>
+<script>
+      function hideAddressBar()    
+      {
+          if(!window.location.hash)
+          { 
+              if(document.height <= window.outerHeight + 10)
+              {
+                  document.body.style.height = (window.outerHeight + 50) +'px';
+                  setTimeout( function(){ window.scrollTo(0, 1); }, 50 );
+              }
+              else
+              {
+                  setTimeout( function(){ window.scrollTo(0, 1); }, 0 ); 
+              }
+          }
+      } 
+      window.addEventListener("load", hideAddressBar );
+      window.addEventListener("orientationchange", hideAddressBar ); 
+    </script>
+
+<style>
+    .ipad-content{
+        min-height: 610px;
+        max-height: 610px;
+    }
+    .ipad-header{
+        background: {!iPadAppConfig.HeaderColor__c};
+        color: {!iPadAppConfig.HeaderFontColor__c};
+    }
+    .ipad-footer{
+        background: {!iPadAppConfig.FooterColor__c};
+        color: {!iPadAppConfig.FooterFontColor__c};
+        height: 110px;
+    }
+    .appWH .footer-icon-holder{
+        float: left;
+        display: block;
+        text-align: center;
+        margin: 3px 20px;
+        width: 110px;
+    }
+    .appWH .footer-icon-holder img{
+        width: 60px;
+        height: 60px;
+        display: block;
+        margin: 5px 15px;
+    }
+    .appWH .footer-icon-holder label{
+        text-shadow: none;    
+    }
+    .left{
+        float: left;
+    }
+    .right{
+        float: right;    
+    }
+    .clear{
+        clear: both;
+    }
+</style>
+
+<!--Login Page Section-->
+
+<div id="dPage1" class="appWH" data-role="page">
+    <!-- login form code -->
+    <div id="loginForm">
+        <c:loginComponent compName="{!loginPageName}"
+            appId="{!iPadAppConfig.id}" 
+            uname="{!iPadAppConfig.Username__c}"
+            pword="{!iPadAppConfig.Password__c}"
+            bodyColor="{!iPadAppConfig.LoginBodyColor__c}"
+            bgImage="{!bgImage}"
+            btnBgColor="{!iPadAppConfig.LoginButtonColor__c}" 
+            btnColor="{!iPadAppConfig.LoginButtonLabelColor__c}"
+            logoURL=""
+        ></c:loginComponent>
+    </div>       
+</div>
+
+
+<!--Landing Page Section-->
+<div id="dPage2" class="appWH" data-role="page">
+    <c:homePageComponent compName="{!homePageName}"
+        appId="{!iPadAppConfig.id}" 
+        bgImage="{!bgImage}"
+        bodyColor="{!iPadAppConfig.BodyColor__c}" 
+        page1IsActive="{!iPadAppConfig.Page_1_Active__c}"
+        page2IsActive="{!iPadAppConfig.Page_2_Active__c}"
+        page3IsActive="{!iPadAppConfig.Page_3_Active__c}"
+        page4IsActive="{!iPadAppConfig.Page_4_Active__c}"
+        page5IsActive="{!iPadAppConfig.Page_5_Active__c}"
+        page6IsActive="{!iPadAppConfig.Page_6_Active__c}"
+    ></c:homePageComponent>
+        <!-- Header Section-->
+        <!-- <div class="innerLogo"></div>
+        <h1 class="pTitle">Page Title</h1>
+        <a href="#dPage1"><div class="btnHome">Home</div></a>
+        -->
+    
+    
+      <!-- Footer Section-->
+        <!--      
+      <div class="footer">
+      
+      </div>
+      -->
+</div>
+<!-- Chatter -->
+<div id="dPage3" class="appWH" data-role="page">
+    <c:chatterPageComponent compName="{!page1Name}"
+        appId="{!iPadAppConfig.id}" 
+        pageTitle="{!iPadAppConfig.Page_1_Title__c}" 
+        bgImage="{!bgImage}"
+        bodyColor="{!iPadAppConfig.BodyColor__c}" 
+        chatterId="{!iPadAppConfig.ChatterId__c}"
+        chatterLocX="{!iPadAppConfig.ChatterPositionX__c}"
+        chatterLocY="{!iPadAppConfig.ChatterPositionY__c}"
+    ></c:chatterPageComponent>
+    <div data-role="footer" class="ipad-footer"> 
+        <apex:repeat value="{!footerImageList}" var="footerImageListVar">
+            <a href="{!footerImageListVar.FooterImageURL__c}" class="footer-icon-holder">
+                <image src="{!footerImageListVar.ImageURL__c}" />
+                <label>{!footerImageListVar.Label__c}</label>
+            </a>
+        </apex:repeat>
+    </div> 
+</div>
+
+<!-- Dashboard -->
+<div id="dPage4" class="appWH" data-role="page">
+    <c:dashboardPageComponent compName="{!page2Name}"
+        appId="{!iPadAppConfig.id}" 
+        pageTitle="{!iPadAppConfig.Page_2_Title__c}" 
+        bgImage="{!bgImage}"
+        bodyColor="{!iPadAppConfig.BodyColor__c}" 
+    ></c:dashboardPageComponent>
+    <div data-role="footer" class="ipad-footer"> 
+        <apex:repeat value="{!footerImageList}" var="footerImageListVar">
+            <a href="{!footerImageListVar.FooterImageURL__c}" class="footer-icon-holder">
+                <image src="{!footerImageListVar.ImageURL__c}" />
+                <label>{!footerImageListVar.Label__c}</label>
+            </a>
+        </apex:repeat>
+    </div> 
+</div>
+
+<!-- Create Account App -->
+<div id="dPage5" class="appWH" data-role="page">
+    <c:createAccountPageComponent compName="{!page3Name}"
+        appId="{!iPadAppConfig.id}" 
+        pageTitle="{!iPadAppConfig.Page_3_Title__c}" 
+        bgImage="{!bgImage}"
+        bodyColor="{!iPadAppConfig.BodyColor__c}" 
+        accountNumber="{!iPadAppConfig.AccountNumber__c}" 
+        accountType="{!iPadAppConfig.AccountType__c}"
+        accountIndustry="{!iPadAppConfig.AccountIndustry__c}"
+        accountRating="{!iPadAppConfig.AccountRating__c}"
+        accountPhone="{!iPadAppConfig.AccountPhone__c}"
+        accountAddress="{!iPadAppConfig.AccountAddress__c}"
+        accountDescription="{!iPadAppConfig.AccountDescription__c}"
+    ></c:createAccountPageComponent>
+    <div data-role="footer" class="ipad-footer"> 
+        <apex:repeat value="{!footerImageList}" var="footerImageListVar">
+            <a href="{!footerImageListVar.FooterImageURL__c}" class="footer-icon-holder">
+                <image src="{!footerImageListVar.ImageURL__c}" />
+                <label>{!footerImageListVar.Label__c}</label>
+            </a>
+        </apex:repeat>
+    </div> 
+</div>
+
+<!-- Learn -->
+<div id="dPage6" class="appWH" data-role="page">
+    <c:learnPageComponent compName="{!page4Name}"
+        appId="{!iPadAppConfig.id}" 
+        pageTitle="{!iPadAppConfig.Page_4_Title__c}" 
+        bgImage="{!bgImage}"
+        bodyColor="{!iPadAppConfig.BodyColor__c}" 
+    ></c:learnPageComponent>
+    <div data-role="footer" class="ipad-footer"> 
+        <apex:repeat value="{!footerImageList}" var="footerImageListVar">
+            <a href="{!footerImageListVar.FooterImageURL__c}" class="footer-icon-holder">
+                <image src="{!footerImageListVar.ImageURL__c}" />
+                <label>{!footerImageListVar.Label__c}</label>
+            </a>
+        </apex:repeat>
+    </div> 
+</div>
+
+
+<!-- VF App -->
+<div id="dPage7" class="appWH" data-role="page">
+    <c:vfPageComponent compName="{!page5Name}"
+        appId="{!iPadAppConfig.id}" 
+        pageTitle="{!iPadAppConfig.Page_5_Title__c}" 
+        bgImage="{!bgImage}"
+        bodyColor="{!iPadAppConfig.BodyColor__c}" 
+        apexPage="{!iPadAppConfig.VisualforcePageName__c}"
+        apexPageLocX="{!iPadAppConfig.VisualforcePageLocationX__c}"
+        apexPageLocY="{!iPadAppConfig.VisualforcePageLocationY__c}"
+    ></c:vfPageComponent>
+    <div data-role="footer" class="ipad-footer"> 
+        <apex:repeat value="{!footerImageList}" var="footerImageListVar">
+            <a href="{!footerImageListVar.FooterImageURL__c}" class="footer-icon-holder">
+                <image src="{!footerImageListVar.ImageURL__c}" />
+                <label>{!footerImageListVar.Label__c}</label>
+            </a>
+        </apex:repeat>
+    </div> 
+</div>
+</apex:page>

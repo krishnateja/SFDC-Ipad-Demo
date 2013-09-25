@@ -1,0 +1,71 @@
+<apex:page sidebar="false"  showheader="false" >
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<!--<link href="{!$Resource.iPhoneApp}" rel="apple-touch-icon" />-->
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<link rel="stylesheet" href="{!URLFOR($Resource.jQMFramework, '/JqCss.css')}" type="text/css" media="screen" />
+<script type="text/javascript" src="{!URLFOR($Resource.jQMFramework, '/Jquery.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.jQMFramework, '/JqMobile.js')}"></script>
+<apex:stylesheet value="/apex/mobileCSS"/>
+<title>Mobile App</title>
+<script>
+      function hideAddressBar()    
+      {
+          if(!window.location.hash)
+          { 
+              if(document.height <= window.outerHeight + 10)
+              {
+                  document.body.style.height = (window.outerHeight + 50) +'px';
+                  setTimeout( function(){ window.scrollTo(0, 1); }, 50 );
+              }
+              else
+              {
+                  setTimeout( function(){ window.scrollTo(0, 1); }, 0 ); 
+              }
+          }
+      } 
+      window.addEventListener("load", hideAddressBar );
+      window.addEventListener("orientationchange", hideAddressBar ); 
+    </script>
+
+
+<!--Login Page Section-->
+
+<div id="dPage1" class="appWH" data-role="page">
+        <!-- login page logo place holder -->
+        <div id="hLogo">Logo</div>
+        
+        <!-- login form code -->
+        
+        <div id="loginForm">
+                <!-- we need to place the code from admin section -->
+                
+                
+                 <a href="#dPage2">login</a>
+  
+        </div>
+        
+       
+</div>
+
+
+<!--Landing Page Section-->
+    <div id="dPage2" class="appWH" data-role="page">
+        
+        <!-- Header Section-->
+        <div class="innerLogo"></div>
+        <h1 class="pTitle">Page Title</h1>
+        <a href="#dPage1"><div class="btnHome">Home</div></a>
+    
+    
+    
+      <!-- Footer Section-->
+      
+      <div class="footer">
+      
+      </div>
+    </div>
+
+
+
+
+</apex:page>

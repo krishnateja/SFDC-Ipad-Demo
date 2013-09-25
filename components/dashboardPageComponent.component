@@ -1,0 +1,60 @@
+<apex:component controller="IPadDemoComponentController" id="dashboardPageComponent" >
+    <apex:attribute name="compName" type="String" required="true" assignTo="{!currentComponent}" description=""/>
+    <apex:attribute name="appId" type="String" required="true" assignTo="{!applicationId}" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>    
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <style>
+        #dPage4{
+            background: {!bodyColor};
+            background-image: url({!bgImage});
+        }
+        #dPage4 .dashboard-container div{
+            margin: 10px;
+            float: left;
+        }
+        #dPage4 .dashboard-container {
+        border-top: solid 1px #fff;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 10px;
+        height: 90%;
+        }
+        #dPage4 .dashboard-container .dashboard-label{
+            display: block;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        #dPage4 .dashboard-container img{
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+    </style>
+
+    <div data-role="content" class="ipad-content"> 
+        <apex:repeat value="{!imageList}" var="imageListVar">
+            <img src="{!imageListVar.ImageURL__c}" 
+                style="position: relative;
+                        left: {!imageListVar.LocationX__c}px;
+                        top: {!imageListVar.LocationY__c}px;
+                        height: {!imageListVar.Height__c}px;
+                        width: {!imageListVar.Width__c}px;" />
+        </apex:repeat>
+        <div class="dashboard-container">
+            <apex:repeat value="{!dashboardImageList}" var="imageListVar">
+                <div>
+                <span class="dashboard-label">{!imageListVar.Label__c}</span>
+                <img src="{!imageListVar.DashboardURL__c}"
+                    style="height: {!imageListVar.Height__c}px;
+                            width: {!imageListVar.Width__c}px;" />
+                </div>
+            </apex:repeat>
+        </div>
+    </div> 
+
+
+</apex:component>

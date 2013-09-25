@@ -1,0 +1,106 @@
+<apex:page showHeader="false" controller="vfKeywordSearchController" >
+
+<apex:stylesheet value="{!$Page.mobileCSS}"/>
+
+    <style>
+    body{
+   background:none;
+    }
+        
+        .left{
+            float: left;    
+          
+            width:24%;
+               border-right: solid 1px #fff;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            height: 530px;
+           
+        }
+        .pbBody input[type="text"]{
+        padding:10px;
+        width:80%;
+        }
+        .pbBody input[type="button"]{
+        padding:12px 20px;
+       background-color:#000;
+       background-image:none;
+       color:#fff;
+       border:none;
+       
+       
+        }
+        .right{
+            float: right;
+             border-radius:10px;
+             width:70%;
+             padding: 10px;
+             border-left: solid 1px #fff;
+            background: rgba(255, 255, 255, 0.1);
+            height: 530px;
+        }
+        h2{
+        
+        font-size:16px;
+        display:block;
+        padding:5px;
+        margin-bottom:10px;
+        }
+        
+        h3{
+        
+        font-size:14px;
+        display:block;
+        padding:5px;
+        }
+    </style>
+    
+    <div class="left">
+    <h2>
+        ASK : Can't find what you need? Ask Now!
+    </h2>
+        <h3><a href="mailto:test@example.com">Send Email</a></h3>
+        
+        <h3><a href="sms:">Send Chat</a></h3>
+    </div>
+    <div class="right">
+        <apex:form >
+            <apex:pageBlock title="Search" >
+                <apex:inputText value="{!searchstring}" id="theSearchstring" maxlength="100" size="110"/>&nbsp;
+                <apex:commandButton value="Go" id="submitButton" style="width:30" reRender="theSearchResults" />
+            </apex:pageBlock>
+            <apex:messages />
+            <apex:pageBlock title="Article List" >
+                <apex:panelGroup id="theSearchResults" >
+                    <apex:panelGrid width="100%">
+                        <table width="99%">
+                            <tr><th width="33%">Title</th>
+                                <th width="33%">Article Type</th>
+                                <th width="33%">Summary</th>
+                            </tr>
+                        </table>
+                        <knowledge:articleList articleVar="article" pageNumber="{!currentPageNumber}" Keyword="{!searchstring}" hasMoreVar="false" pageSize="10">
+                            <table width="99%">
+                                <tr>
+                                    <td width="33%"><apex:outputLink value="{!URLFOR($Action.KnowledgeArticle.View, article.id,['popup' = 'true'])}">{!article.title}</apex:outputLink></td>
+                                    <td width="33%"><apex:outputText >{!article.articleTypeLabel}</apex:outputText></td>
+                                    <td width="33%"><apex:outputText >{!article.abstract}</apex:outputText></td>
+                                </tr>
+                            </table>
+                        </knowledge:articleList>
+                    </apex:panelGrid>
+                    <apex:panelGrid columns="2">
+                        <apex:commandLink action="{!previous}" value="Previous" style="{!IF(prevRequired = true,'display:block','display:none')}" reRender="theSearchResults"/>
+                        <apex:commandLink action="{!next}" value="Next" style="{!IF(nextRequired = true,'display:block','display:none')}" reRender="theSearchResults"/>
+                    </apex:panelGrid>
+                </apex:panelGroup>
+            </apex:pageBlock>
+            <apex:actionFunction action="{!refreshSearchResult}" name="refreshSearchResult" rerender="theSearchResults" >
+            </apex:actionFunction>
+        </apex:form>
+    </div>
+
+
+    <!-- <img src="{!$Resource.askImg}"/> -->
+</apex:page>

@@ -1,0 +1,783 @@
+<apex:page sidebar="false" controller="iPadMakerSettingsController" action="{!getIPadApplication}">
+  <apex:stylesheet value="{!$Page.iPadMaker_SettingsCSS}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.jQueryUiDialog, 'css/ui-lightness/jquery-ui-1.10.3.custom.min.css')}"/>
+  <apex:include pageName="ConfigiPadApp_JS"/>
+  <apex:include pageName="ConfigiPadApp_JSObj"/>
+ 
+  
+
+  <div class="row" id="build">    
+    <div id="section-settings">
+      <h1>iPad Demo Builder</h1>
+      <div id="build-desc">
+        <p>Follow the steps below to make an iPad Demo</p>
+      </div>
+    
+    <ul id="accordion">
+    <li>Setp 1 - App Name and Basic Settings</li>
+    <ul>
+        <li><div style="clear:both;" class="optionsDiv">
+      
+        
+        <input type="hidden" value="{!iPadApp.BodyIsUseImage__c}" id="body-use-image" />
+        <input type="hidden" value="{!iPadApp.BodyBgImage__c}" id="body-bg-image" />
+        <input type="hidden" value="{!iPadApp.IsTwoCol__c}" id="layout-is-two-col" />
+        <div class="config-container col-1 c25w">
+          <div class="fltLeft">
+            <h3>Name Your App</h3>
+            <input type="hidden" id="record-id" value="{!iPadApp.Id}" />
+            <input type="hidden" id="application-url" value="{!iPadApp.ApplicationURL__c}" />
+            <input type="text" id="app-name" value="{!iPadApp.Name}" class="appName" />
+          
+          
+          </div>
+          <div class="fltLeft">
+              <h3>Choose Template</h3>
+              <div class="imgFltL">
+                  <input type="radio" name="layout-radio" id="layout-two-col" />
+                  <img style="width: 50px;" src="{!$Resource.TwocolLayout}" />
+              </div>
+              <div class="imgFltL"> 
+                  <input type="radio" name="layout-radio"  id="layout-three-row" />
+                  <img style="width: 50px;" src="{!$Resource.threeColLayout}" /> 
+              </div>
+          
+          </div>
+         
+        </div>
+        
+        
+         <div class="config-container col-1 c25w"> 
+         
+         
+            <div class="lbBlock">
+            
+            <h3>Header</h3>
+           
+            <label>Background-color:</label>
+            <input type="color" class="color-input" id="app-header-bg" value="{!iPadApp.HeaderColor__c}" />
+            </div>
+        
+             <div class="lbBlock">
+            <label>Font-color:</label>
+            <input type="color" class="color-input" id="app-header-fg" value="{!iPadApp.HeaderFontColor__c}" />
+            </div>
+            
+             <div class="lbBlock">
+            <h3>Footer</h3>
+            <label>Background-color:</label>
+            <input type="color" class="color-input" id="app-footer-bg" value="{!iPadApp.FooterColor__c}" />
+          </div>
+         
+         </div>
+         
+        <div class="config-container col-1 c37w">
+          <h3>Background Settings</h3>
+          <div class="fltLeft">
+            <div class="lbBlock2">
+            <input type="radio" name="app-body-bg" class="app-body-bg" id="app-body-bg-color"/>
+            <label>Background-Color: </label>
+            <input type="color" class="color-input" id="app-body-bg" value="{!iPadApp.BodyColor__c}" />
+            </div>
+          </div>
+          <div class="fltLeft">
+            <div class="lbBlock2">
+            <input type="radio" name="app-body-bg" id="app-body-bg-img"/>
+            <label>Background-Image :</label>
+            
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-white" value="" />
+              <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'white-bg.png')}" /> </div>
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-green" value="" />
+              <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'green-bg.png')}" /> </div>
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-blue" value="" />
+              <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'blue-bg.png')}" /> </div>
+            <div class="imgFltL">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-black" value="" />
+              <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'black-bg.png')}" /> </div>
+            <div>
+            </div>
+            <div class="lbBlock">
+              <input type="radio" name="app-body-bg-radio" id="app-body-bg-img-browse" value="" />
+              <label>Image URL: </label>
+              <input class="txt-input image-url" value="{!iPadApp.BodyBgImageURL__c}" id="app-body-bg-img-url"/>
+              <input type="button" value="Browse" class="image-browse" />
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+    </li>
+       
+    </ul>
+    <li>Setp 2 - Customize and Add pages to the App</li>
+    <ul>
+        <li>
+        
+        
+    
+     
+        <div style="clear:both;" class="optionsDiv">
+        
+        <div class="pageBtnsDiv">
+          <button class="btn show-page" data-name="Login Page" id="loginPage" href="">{!LoginPageName}</button>
+          <button class="btn show-page" data-name="Home Page" id="homePage" href="">{!HomePageName}</button>
+          <button class="btn show-page" data-name="page1" id="page1" href="">Chatter</button>
+          <button class="btn show-page" data-name="page2" id="page2" href="">Dashboard</button>
+          <button class="btn show-page" data-name="page3" id="page3" href="">Create Account</button>
+          <button class="btn show-page" data-name="page4" id="page4" href="">Learning</button>
+          <button class="btn show-page" data-name="page5" id="page5" href="">Follow Up</button>
+          <button class="btn show-page" data-name="page6" id="page6" href="">Customized Page</button>
+        </div>
+        <div id="edit-loginPage" class="edit-page">
+          <h3>Customize the Login Page</h3>
+          <p>Customize your login page by changing the background, and login button settings. 
+            Add a logo image to be used in your demo. The recommended logo size is 200x120px.
+            In the "Login Code", enter the username and password of the Salesforce User to be used in the demo. </p>
+          <input type="hidden" value="{!iPadApp.LoginIsUseImage__c}" id="login-use-image" />
+          <input type="hidden" value="{!iPadApp.LoginBgImage__c}" id="login-body-bg-image" />
+          <div>
+            <input type="hidden" value="{!loginPageName}" class="page-name" />
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft">
+                <h3>Login Code</h3>
+                <label>Username:</label>
+                <input class="txt-input" id="username" value="{!iPadApp.Username__c}" />
+               </div>
+               <div class="fltLeft">
+                <label>Password:</label>
+                <input class="txt-input" id="password" value="{!iPadApp.Password__c}" />
+              </div>
+              <div class="fltLeft">
+                <h3>Login Button Settings</h3>
+                <div class="lbBlock"><label>Background-color: </label>
+                <input type="color" class="color-input" id="login-button-color" value="{!iPadApp.LoginButtonColor__c }" />
+                </div>
+                <div class="lbBlock">
+                <label>Font-color: </label>
+                <input type="color" class="color-input" id="login-button-label-color" value="{!iPadApp.LoginButtonLabelColor__c }" />
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c27w">
+            <div class="fltLeft">
+              
+                <h3>Logo Settings</h3>
+                <div class="logo-div">
+                  <div class="fltLeft">
+                  <label>Image URL: </label>
+                  <input class="txt-input image-url" id="logo-url" value="{!iPadApp.LogoURL__c}" />
+                  <input type="button" value="Browse" class="image-browse" />
+                  </div>
+               
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c37w">
+              <div class="fltLeft">
+                <h3>Background Settings</h3>
+                <div class="fltLeft">
+                <div class="lbBlock2">
+                  <input type="radio" name="login-body-bg" class="login-body-bg" id="login-body-bg-color"/>
+                  <label>Background Color: </label>
+                  <input type="color" class="color-input" id="login-body-color" value="{!iPadApp.LoginBodyColor__c}" />
+                </div>
+                </div>
+                <div class="fltLeft">
+                <div class="lbBlock2">
+                  <input type="radio" name="login-body-bg" id="login-body-bg-img"/>
+                  <label>Background Image:</label>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-white" value="" />
+                    <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'white-bg.png')}" /> </div>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-green" value="" />
+                    <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'green-bg.png')}" /> </div>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-blue" value="" />
+                    <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'blue-bg.png')}" /> </div>
+                  <div class="imgFltL">
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-black" value="" />
+                    <img style="width: 45px;" src="{!URLFOR($Resource.iPadBg, 'black-bg.png')}" /> </div>
+                 </div>
+                   <div class="lbBlock2">
+                  
+                    <input type="radio" name="login-body-bg-radio" id="login-body-bg-img-browse" value="" />
+                    <label>Image URL: </label>
+                    <input class="txt-input image-url" value="{!iPadApp.LoginBgImageURL__c}" id="login-body-bg-img-url"/>
+                    <input type="button" value="Browse" class="image-browse" />
+                    </div>
+                    
+                  
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div id="edit-homePage" class="edit-page">
+          <h3>Customize the Landing Page</h3>
+          <p>The Landing Page works as a menu that will link the user to the other pages in the app. 
+            It uses as background the settings made in Step 1. It can further be customized by adding images. </p>
+          <div>
+            <input type="hidden" value="{!homePageName}" class="page-name" />
+            <div class="config-container col-1 c37w">
+              
+              <div class="fltLeft">
+              
+              <label class="titLeft" >About Title:</label>
+              <input  type="text" class="txt-input " id="home-title" value="{!iPadApp.Home_Page_Title__c}" placeholder="About the Bank" />
+              </div>
+              
+              <div class="fltLeft">
+              <label class="titLeft">About Text:</label>
+              ​
+              <textarea id="home-about-txt" class="txtaLeft" rows="10" cols="90">{!iPadApp.AboutText__c}</textarea>
+              </div>
+            </div>
+            
+          
+            <!-- add image section
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft">
+              <h3>Add Images</h3>
+              <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              </div>
+              <div id="image-list-container"> </div>
+            </div>
+            -->
+          </div>
+        </div>
+        <!-- Chatter Page -->
+        <div id="edit-page1" class="edit-page">
+          <h3>Customize the Chatter Page</h3>
+          <p>The Chatter page shows the Chatter feed of the entered Chatter Feed Id. 
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app.
+            You can customized how the page looks by setting the position of Chatter, and adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_1_Active__c}" id="page1-active-hidden" />
+            <input type="hidden" value="{!page1Name}" class="page-name" />
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft">
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Activate this page</label>
+                <input type="checkbox" id="page1-active"/>
+               </div>
+                <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page1-title" value="{!iPadApp.Page_1_Title__c}" placeholder="Collaborate"/>
+               
+               </div>
+              
+               
+                <div class="lbBlock">
+                <label>Chatter Feed Id:</label>
+                <input type="text" class="txt-input" id="chatter-id" value="{!iPadApp.ChatterId__c}" />
+                </div>
+              </div>
+               </div>
+               
+               <div class="config-container col-1 c27w">
+              <div class="fltLeft">
+              <div class="lbBlock">
+                <h3>Menu Icon</h3>
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+            </div>
+            
+            
+           <!--
+           chatter positions
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft">
+                <h3>Chatter Position</h3>
+                 <div class="lbBlock">
+                <label>Left:</label>
+                <input type="number" class="px-input" id="chatter-locX" value="{!iPadApp.ChatterPositionX__c}" />
+                </div>
+                 <div class="lbBlock">
+                <label>Top:</label>
+                <input type="number" class="px-input" id="chatter-locY" value="{!iPadApp.ChatterPositionY__c}" />
+                </div>
+              </div>
+              <div class="fltLeft">
+                <h3>Add Other Images</h3>
+                <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+                <div id="image-list-container"> </div>
+              </div>
+            </div>-->
+            
+            
+          </div>
+        </div>
+        <!-- Dashboard Page -->
+        <div id="edit-page2" class="edit-page">
+          <h3>Customize the Dashboard Page</h3>
+          <p>The Dashboard page shows the entered dashboard chart images. You can create a chart based on a report, or by entering the charts image url.
+            To get the URL of a chart created on a standard dashboard, please refer to this video: http://www.youtube.com/watch?v=IBQcywsJ0OE . 
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. 
+            You can customized how the page looks by adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_2_Active__c}" id="page2-active-hidden" />
+            <input type="hidden" value="{!page2Name}" class="page-name" />
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft mBtm">
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Activate this page</label>
+                
+                <input type="checkbox" id="page2-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page2-title" value="{!iPadApp.Page_2_Title__c}" placeholder="My Performance" />
+                </div>
+                <!-- <label>Dashboard Id:</label><input type="text" class="txt-input" id="dashboard-id" value="{!iPadApp.DashboardId__c}" /> -->
+              </div>
+              <div class="fltLeft">
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock">
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c30w">
+              <h3>Add Dashboard Images </h3>
+               <div class="lbBlock">
+              <input type="button" value="Add Image" id="add-dashboard-image-btn" class="add-dashboard-image-btn"/>
+              <div id="dashboard-list-container"> </div>
+              </div>
+            </div>
+            <!--<div class="config-container col-1 c25w">
+              <h3>Add Images </h3>
+               <div class="lbBlock">
+              <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              <div id="image-list-container"> </div>
+              </div>
+            </div>-->
+          </div>
+        </div>
+        <!-- Create Account Page -->
+        <div id="edit-page3" class="edit-page">
+          <h3>Customize the Create Account Page</h3>
+          <p>In this page, you can give the customer a demo of the ease of Account creation in Salesforce.
+            Check the account fields that you would like to show in the app.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. 
+            You can customized how the page looks by adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_3_Active__c}" id="page3-active-hidden" />
+            <input type="hidden" value="{!page3Name}" class="page-name" />
+            <input type="hidden" value="{!iPadApp.AccountNumber__c}" id="account-number-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountType__c}" id="account-type-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountIndustry__c}" id="account-industry-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountRating__c}" id="account-rating-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPhone__c}" id="account-phone-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountAddress__c}" id="account-address-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountDescription__c}" id="account-description-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPersonName__c }" id="account-personname-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPersonBirthdate__c }" id="account-birthdate-hidden" />
+            <input type="hidden" value="{!iPadApp.AccountPersonEmail__c }" id="account-email-hidden" />
+
+            <div class="config-container col-1 c25w">
+              <div class='fltLeft mBtm'>
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Active this page</label>
+                <input type="checkbox" id="page3-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page3-title" value="{!iPadApp.Page_3_Title__c}" placeholder="Account Application" />
+                  </div>
+              </div>
+              <div class="fltLeft">
+                <h3>MenuIcon</h3>
+                 <div class="lbBlock">
+                 
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c25w">
+              <h3>Account Fields To Show</h3>
+               <div class="lbBlock">
+              <label>Is Person Account:</label>
+              <input type="checkbox" id="account-personname" />
+              </div>
+               <div class="lbBlock">
+              <label>Birthdate:</label>
+              <input type="checkbox" id="account-birthdate" />
+              </div>
+               <div class="lbBlock">
+              <label>Email:</label>
+              <input type="checkbox" id="account-email" />
+              </div>
+               <div class="lbBlock">
+              <label>Phone:</label>
+              <input type="checkbox" id="account-phone" />
+              </div>
+               <div class="lbBlock">
+              <label>Billing Address:</label>
+              <input type="checkbox" id="account-address" />  
+              </div>
+               <div class="lbBlock">            
+              <label>Account Number:</label>
+              <input type="checkbox" id="account-number" />
+              </div>
+               <div class="lbBlock">
+              <label>Type:</label>
+              <input type="checkbox" id="account-type" />
+              </div>
+               <div class="lbBlock">
+              <label>Industry:</label>
+              <input type="checkbox" id="account-industry" />
+              </div>
+               <div class="lbBlock">
+              <label>Rating:</label>
+              <input type="checkbox" id="account-rating" />
+              </div>
+               <div class="lbBlock">
+              <label>Description:</label>
+              <input type="checkbox" id="account-description" />
+</div>
+            </div>
+           <!-- <div class="config-container col-1 c25w">
+              <h3>Add Images</h3>
+               <div class="lbBlock">
+              <input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              <div id="image-list-container"> </div>
+              </div>
+            </div>-->
+          </div>
+        </div>
+        <!-- Learn Page -->
+        <div id="edit-page4" class="edit-page">
+          <h3>Customize the Learning Page</h3>
+          <p>In the Learning Page, you can give the customer a demo of the user accessing learning resources from the same application.
+            In this page, you can add Article links and Video links that the user can access.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. 
+            You can customized how the page looks by adding images to the page. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_4_Active__c}" id="page4-active-hidden" />
+            <input type="hidden" value="{!page4Name}" class="page-name" />
+            <div class="config-container col-1 c20w">
+              <div class='fltLeft mBtm'>
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock">
+                <label>Active this page</label>
+                <input type="checkbox" id="page4-active"/>
+               </div>
+                <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page4-title" value="{!iPadApp.Page_4_Title__c}" />
+                </div>
+              </div>
+              <div class='fltLeft'>
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock"><div id="footer-icon-container"> </div></div>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Add Article Links</h3>
+               <div class="lbBlock">
+               <input type="button" value="Add Article" id="add-article-btn" class="add-article-btn"/>
+              <div id="article-list-container"> </div>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Add Video Links</h3>
+               <div class="lbBlock"><input type="button" value="Add Video" id="add-video-btn" class="add-video-btn"/>
+              <div id="video-list-container"> </div></div>
+            </div>
+           <!-- <div class="config-container col-1 c25w">
+              <h3>Add Images</h3>
+               <div class="lbBlock"><input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/>
+              <div id="image-list-container"> </div></div>
+            </div>-->
+          </div>
+        </div>
+        <!-- Follow Up Page -->
+        <div id="edit-page5" class="edit-page">
+          <h3>Customize the Follow Up Page</h3>
+          <p>The Follow Up page shows how the user can view a list of tasks and events. This page also has a map for showing appointment locations.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. </p>
+          <div>
+            <input type="hidden" value="{!iPadApp.Page_5_Active__c}" id="page5-active-hidden" />
+            <input type="hidden" value="{!page5Name}" class="page-name" />
+            <input type="hidden" value="{!iPadApp.FollowUpShowTasks__c}" id="followup-show-tasks-hidden" />
+            <input type="hidden" value="{!iPadApp.FollowUpShowEvents__c}" id="followup-show-events-hidden" />
+            <div class="config-container col-1 c20w">
+              <div class='fltLeft'>
+                <h3>Customize the Page</h3>
+                 <div class="lbBlock"><label>Active this page</label>
+                <input type="checkbox" id="page5-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page5-title" value="{!iPadApp.Page_5_Title__c}" /></div>
+              </div>
+             
+              </div>
+              <div class="config-container col-1 c27w">
+             <div class='fltLeft'>
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock"><div id="footer-icon-container"> </div>
+                 </div>
+                 
+                 </div>
+              
+            </div>
+            
+            <div class="config-container col-1 c21w">
+              <h3>Activity List Details</h3>
+               <div class="lbBlock"><label>Show Tasks</label>
+              <input type="checkbox" id="followup-show-tasks"/>
+              </div>
+               <div class="lbBlock">
+              <label>Show Events</label>
+              <input type="checkbox" id="followup-show-events"/>
+              </div>
+            </div>
+            <div class="config-container col-1 c20w">
+              <h3>Map Details</h3>
+               <div class="lbBlock"><label>Height</label>
+              <input type="number" class="px-input" id="followup-map-height" value="{!iPadApp.FollowUpMapHeight__c}"/>
+              </div>
+               <div class="lbBlock">
+              <label>Width</label>
+              <input type="number" class="px-input" id="followup-map-width" value="{!iPadApp.FollowUpMapWidth__c}"/>
+              </div>
+               <div class="lbBlock">
+              <label>Zoom</label>
+              <input type="number" class="px-input" id="followup-map-zoom" value="{!iPadApp.FollowUpMapZoom__c}"/>
+             </div>
+            </div>
+            <!--
+                        <div class="config-container col-1 c20w">
+                            <h3>Add Images</h3><input type="button" value="Add Image" id="add-image-btn" class="add-image-btn"/> 
+                            <div id="image-list-container">
+                            </div>
+                        </div>
+                        -->
+          </div>
+          <div class="clear"></div>
+          <h3>Customize the Follow Up Contact Page</h3>
+          <p>On clicking the account name in the map, the Follow Up Contact page will be shown. It shows details about your contact, including their Activities, Profile, and Interests. Mock buttons are provided, and can be customized. </p>
+          <div>
+          <!--   <div class="config-container col-1 c21w">
+            
+               <div class="fltLeft">
+                <h3>Contact Details</h3>
+                <div class="contact-div">
+                   <div class="lbBlock"><label>Contact Twitter Handle: </label>
+                  <input type="text" class="txt-input" id="followup-contact-twitter" value="{!iPadApp.FollowUpContactTwitterHandle__c}" placeholder="@sampletwitterhandle"/>
+                  </div>
+                   <div class="lbBlock">
+                  <label>Contact Image URL: </label>
+                  <input type="text" class="txt-input image-url" id="followup-contact-image" value="{!iPadApp.FollowUpContactImageURL__c}" />
+                  <input type="button" value="Browse" class="image-browse" />
+                  </div>
+                </div>
+                </div>
+                
+            
+               
+                <div class="fltLeft ">
+                <h3>Contact Buttons</h3>
+                <div class="lbBlock">
+              
+              <label>Button 1 Label</label>
+              <input type="text" class="txt-input" id="followup-button1-label" value="{!iPadApp.FollowUpButton1Label__c}" placeholder="Send Email"/>
+           
+             </div>
+              <div class="lbBlock">
+              <label>Button 1 Background-color: </label>
+              <input type="color" class="color-input" id="followup-button1-bg-color" value="{!iPadApp.FollowUpButton1BgColor__c }" />
+              </div>
+               <div class="lbBlock">
+              <label>Button 1 Font-color: </label>
+              <input type="color" class="color-input" id="followup-button1-font-color" value="{!iPadApp.FollowUpButton1FontColor__c}" />
+              </div>
+               <div class="lbBlock">
+              <label>Button 2 Label</label>
+              <input type="text" class="txt-input" id="followup-button2-label" value="{!iPadApp.FollowUpButton2Label__c}" placeholder="Add Task"/>
+              </div>
+               <div class="lbBlock">
+              <label>Button 2 Background-color: </label>
+              <input type="color" class="color-input" id="followup-button2-bg-color" value="{!iPadApp.FollowUpButton2BgColor__c}" />
+             </div>
+              <div class="lbBlock">
+              <label>Button 2 Font-color: </label>
+              <input type="color" class="color-input" id="followup-button2-font-color" value="{!iPadApp.FollowUpButton2FontColor__c}" />
+           </div>
+                </div>
+                
+               
+            </div> -->
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft">
+                <h3>Contact Details</h3>
+                
+                <div class="contact-div">
+                   <div class="lbBlock"><label>Contact Twitter Handle: </label>
+                  <input type="text" class="txt-input" id="followup-contact-twitter" value="{!iPadApp.FollowUpContactTwitterHandle__c}" placeholder="@sampletwitterhandle"/>
+                  </div>
+                   <div class="lbBlock">
+                  <label>Contact Image URL: </label>
+                  <input type="text" class="txt-input image-url" id="followup-contact-image" value="{!iPadApp.FollowUpContactImageURL__c}" />
+                  <input type="button" value="Browse" class="image-browse" />
+                  </div>
+                </div>
+                  <div class="fltLeft mBtm">
+                
+                 <div class="lbBlock">
+                  <h3>Activities</h3>
+                <label>Activities Label</label>
+                <input type="text" class="txt-input" id="followup-activities-label" value="{!iPadApp.FollowUpActivitiesLabel__c}" placeholder="ex: Marketing Activities"/>
+                </div>
+                </div>
+              </div>
+              
+              <div class="fltLeft">
+                    <h3>Activity Demo Data</h3>
+                     <div class="lbBlock"> <input type="button" value="Add Activity" id="add-activity-btn" class="add-activity-btn"/> 
+                   <div id="activity-list-container">
+                    </div></div>
+              </div>
+            </div>
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft mBtm">
+                <h3>Contact Interest Details</h3>
+                 <div class="lbBlock">
+                <label>Interest Label</label>
+                <input type="text" class="txt-input" id="followup-interest-label" value="{!iPadApp.FollowUpInterestLabel__c}" placeholder="ex: Product Interests"/>
+                </div>
+              </div>
+              <div class="fltLeft">
+                    <h3>Interest Demo Data</h3>
+                     <div class="lbBlock">
+                     <input type="button" value="Add Interest" id="add-interest-btn" class="add-interest-btn"/></div> 
+                    <div id="interest-list-container"></div>
+                    
+              </div>
+            </div>
+            <div class="config-container col-1 c25w">
+              <div class="fltLeft mBtm">
+                <h3>Contact Profile Details</h3>
+                 <div class="lbBlock"><label>Profile Label</label>
+                <input type="text" class="txt-input" id="followup-profile-label" value="{!iPadApp.FollowUpProfileLabel__c}" placeholder="ex: Social Profile"/>
+                </div>
+              </div>
+              <div class="fltLeft">              
+                    <h3>Profile Demo Data</h3>
+                     <div class="lbBlock">
+                     <input type="button" value="Add Profile" id="add-profile-btn" class="add-profile-btn"/> </div>
+                    <div id="profile-list-container">
+                    
+                    </div>
+              </div>
+            </div>
+           
+          </div>
+        </div>
+        <!-- Ask Page -->
+        <div id="edit-page6" class="edit-page">
+          <h3>Customize this Page</h3>
+          <p>For demo scenarios that are not covered in this app, just enter the name of the Visualforce page, and it will be accessed from the app.
+            Setting this page to active will show the page icon in the Landing page and in the footer of the app. </p>
+          <div>
+           <div class="lbBlock">
+            <input type="hidden" value="{!iPadApp.Page_6_Active__c}" id="page6-active-hidden" />
+            <input type="hidden" value="{!page6Name}" class="page-name" />
+            </div>
+            <div class="config-container col-1 c20w">
+              <div class='fltLeft mBtm'>
+                 <div class="lbBlock"><h3>Customize the Page</h3>
+                <label>Active this page</label>
+                <input type="checkbox" id="page6-active"/>
+                </div>
+                 <div class="lbBlock">
+                <label>Page Title:</label>
+                <input type="text" class="txt-input" id="page6-title" value="{!iPadApp.Page_6_Title__c}" />
+                </div>
+                 <div class="lbBlock">
+                <label>VF Page Name:</label>
+                <input type="text" class="txt-input" id="vf-name" value="{!iPadApp.VisualforcePageName__c}" />
+                </div>
+              </div>
+              
+              
+            </div>
+            
+            
+            
+            
+             <div class="config-container col-1 c20w" >
+            
+            <div class='fltLeft'>
+                <h3>Menu Icon</h3>
+                 <div class="lbBlock">
+                <div id="footer-icon-container"> </div>
+                </div>
+              </div>
+              </div>
+            <div class="config-container col-1 c20w" >
+              <h3>VF Page Position</h3>
+               <div class="lbBlock">
+              <label>Left:</label>
+              <input type="number" class="px-input" id="vf-locX" value="{!iPadApp.VisualforcePageLocationX__c}" />
+              </div>
+               <div class="lbBlock">
+              <label>Top:</label>
+              <input type="number" class="px-input" id="vf-locY" value="{!iPadApp.VisualforcePageLocationY__c}" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- settings holder -->
+        
+    
+        
+        
+        
+        
+        
+        
+        </li>
+       
+    </ul>
+   <!-- <li>Setp 3</li>
+    <ul>
+        <li> 
+       <h3>Save and config the ipad App</h3>
+        
+       
+    </li>
+        
+    </ul>-->
+</ul>
+    
+   
+      
+    </div>
+    
+    <div class="pre_save">
+      
+      
+      <input type="button" value="Save" id="save-btn" />
+      <input type="button" value="View App" id="view-btn" style="display: none;"/>
+      <input type="button" value="Create Access URL" id="create-url-btn" style="display: none;"/>
+        </div>
+    </div>
+    <!-- settings main div -->
+  
+  <!-- ALL -->
+  
+
+</apex:page>

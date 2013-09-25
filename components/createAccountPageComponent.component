@@ -1,0 +1,267 @@
+<apex:component controller="IPadDemoComponentController" id="createAccountPageComponent" allowDML="true" >
+    <apex:attribute name="compName" type="String" required="true" assignTo="{!currentComponent}" description=""/>
+    <apex:attribute name="appId" type="String" required="true" assignTo="{!applicationId}" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>    
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <apex:attribute name="accountNumber" type="Boolean" required="true" description=""/>    
+    <apex:attribute name="accountType" type="Boolean" required="true" description=""/>    
+    <apex:attribute name="accountIndustry" type="Boolean" required="true" description=""/>    
+    <apex:attribute name="accountRating" type="Boolean" required="true" description=""/>    
+    <apex:attribute name="accountPhone" type="Boolean" required="true" description=""/>    
+    <apex:attribute name="accountAddress" type="Boolean" required="true" description=""/>        
+    <apex:attribute name="accountDescription" type="Boolean" required="true" description=""/>    
+    <apex:attribute name="accountPersonName" type="Boolean" required="true" description="" assignTo="{!accountIsPerson}"/>        
+    <apex:attribute name="accountBirthdate" type="Boolean" required="true" description=""/>    
+    <apex:attribute name="accountEmail" type="Boolean" required="true" description=""/>    
+    <script type="text/javascript" src="{!URLFOR($Resource.jQMFramework, '/Jquery.js')}"></script>
+    <style>
+    #tabs {
+        font-size: 90%;
+        width:100%;
+    }
+    #tabs ul {
+        float: left;
+        width: 580px;
+        margin:0;
+        padding:0;
+    }
+    #tabs li {
+        margin-left:0px;
+        list-style: none;
+        font-size:14px;
+        padding:5px 10px;
+    }
+    * html #tabs li {
+        display: inline;
+    }
+    #tabs li, #tabs li a {
+        float: left;
+    }
+    #tabs ul li.active {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    #tabs ul li.active a {
+        color: #333333;
+    }
+    #tabs #tab-1, #tab-2, #tab-3, #tab-4 {
+        border-top:solid 1px #fff;
+        clear: both;
+        padding: 15px;       
+    }
+    #tabs div h3 {
+        margin-bottom: 12px;
+    }
+    #tabs div p {
+        line-height: 150%;
+    }
+    #tabs ul li a {
+        text-decoration: none;
+        padding: 8px;
+        color: #000;
+        font-weight: bold;
+    }
+    .thumbs {
+        float:left;
+        border:#000 solid 1px;
+        margin-bottom:20px;
+        margin-right:20px;
+    }
+    #dPage5{
+        background: {!bodyColor};
+        background-image: url({!bgImage});
+    }
+    #dPage5 .account-field-container{
+        border-top:solid 1px #fff;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;   
+        border-radius:10px;     
+        height: 90%;
+    }
+    #dPage5 .account-field-label{
+        text-shadow: none;
+        font-weight: bold;
+        font-size: 13px;            
+    }
+    .message{
+        display: block;
+        color: red;
+        text-shadow: none;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;    
+            
+        background-color: #ffc;
+        border-style: solid;
+        border-width: 1px;
+           
+        padding:0 !important;
+        margin: 0 !important;
+        height: 480px;    
+    }
+    #dPage5 .dateFormat{
+        display: none;
+    }
+    .lLeft{
+        float:left;
+        width:217px;
+        padding:7px;
+        margin:10px 10px 0 0;
+    }
+    .tAreaH{
+        height:100px !important;
+    }
+    .svBtn{
+        position:absolute !important;
+        right:75px !important;
+        top:550px;
+    } 
+    .lLeft h1{
+        display:block;
+        padding:5px 0;
+        font-size:20px;
+        border-bottom:solid 1px #fff;
+        margin-bottom:10px;
+    }
+    a.mtop{
+        margin-top:30px;
+    }
+    .viewBtn{
+       border-radius:6px;
+       border:solid 1px #168700;
+       background-color: #1ca900;
+       line-height:30px;
+       color: #fff !important;
+       cursor: pointer;
+       float: right;
+       height: 30px;
+       right:15px;
+       position:absolute;
+       bottom:114px;
+       padding:5px 10px;
+       text-decoration:none;
+    }
+    .bTop div{
+         display:block !important;
+    }
+    div.ui-select div{
+        display:block !important;
+    }
+    div.ui-select{
+        display:block !important;
+    }
+    .ui-select .ui-btn select{
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#tabs div').hide();
+        $('#tabs div:first').show();
+        $('#tabs ul li:first').addClass('active');
+        
+        $('#tabs ul li a').click(function(){ 
+            $('#tabs ul li').removeClass('active');
+            $(this).parent().addClass('active'); 
+            var currentTab = $(this).attr('href'); 
+            $('#tabs div').hide();
+            $(currentTab).show();
+            return false;
+        });
+    });
+</script>
+
+    <div data-role="content" class="ipad-content"> 
+        <a href="#dPage5-2" class="viewBtn">View Accounts</a>
+        <apex:repeat value="{!imageList}" var="imageListVar">
+            <image src="{!imageListVar.ImageURL__c}" 
+                style="position: relative;
+                        left: {!imageListVar.LocationX__c}px;
+                        top: {!imageListVar.LocationY__c}px;
+                        height: {!imageListVar.Height__c}px;
+                        width: {!imageListVar.Width__c}px;" />
+        </apex:repeat>
+        <div class="account-field-container">
+            <apex:form >
+            <div id="container">
+                <div id="tabs">
+                    <ul>
+                      <li><a href="#tab-1">Personal Details</a></li>
+                      <li><a href="#tab-2">Contact Details</a></li>
+                      <li><a href="#tab-3">Account Details</a></li>
+                      <li><a href="#tab-4">Requiremens</a></li>
+                    </ul>
+                    <div id="tab-1">
+                        <apex:outputLabel styleClass="account-field-label" value="Account Name:" rendered="{!IF(accountPersonName==true, false, true)}" />
+                        <apex:inputField value="{!account.name}" rendered="{!IF(accountPersonName==true, false, true)}"/>
+                        <apex:outputPanel rendered="{!accountPersonName}">
+                        <apex:outputLabel styleClass="account-field-label" value="Salutation:" /><apex:inputField value="{!contact.Salutation}" styleClass="account-salutation"/>
+                        <apex:outputLabel styleClass="account-field-label" value="First Name:"  /><apex:inputField value="{!contact.firstName}" styleClass="account-firstname"/>
+                        <apex:outputLabel styleClass="account-field-label" value="Last Name:"  /><apex:inputField value="{!contact.lastName}" styleClass="account-lastname"/>
+                        <apex:outputLabel styleClass="account-field-label" value="Birthdate:" rendered="{!accountBirthdate}" /><apex:inputField value="{!contact.birthdate}" rendered="{!accountBirthdate}" styleClass="account-birthdate"/>
+                        <apex:outputLabel styleClass="account-field-label" value="Email: " rendered="{!accountEmail}" /><apex:inputField value="{!contact.email}" rendered="{!accountEmail}" styleClass="account-email"/></apex:outputPanel>
+                        <apex:outputLabel styleClass="account-field-label" value="Phone Number: " rendered="{!accountPhone}" /><apex:inputField value="{!account.phone}" rendered="{!accountPhone}" styleClass="account-phone"/>
+                    </div>
+                    <div id="tab-2">
+                        <apex:outputLabel styleClass="account-field-label" value="Billing Address" rendered="{!accountAddress}" />
+                        <apex:outputLabel styleClass="account-field-label" value="Street: " rendered="{!accountAddress}" /><apex:inputField value="{!account.billingStreet}" rendered="{!accountAddress}" styleClass="tAreaH account-street" />
+                        <apex:outputLabel styleClass="account-field-label" value="City: " rendered="{!accountAddress}" /><apex:inputField value="{!account.billingCity}" rendered="{!accountAddress}" styleClass="account-city"/>
+                        <apex:outputLabel styleClass="account-field-label" value="State: " rendered="{!accountAddress}" /><apex:inputField value="{!account.billingState}" rendered="{!accountAddress}" styleClass="account-state"/>
+                        <apex:outputLabel styleClass="account-field-label" value="Country" rendered="{!accountAddress}" /><apex:inputField value="{!account.billingCountry}" rendered="{!accountAddress}" styleClass="account-country"/>
+                    </div>
+                    <div id="tab-3">
+                        <apex:outputLabel styleClass="account-field-label" value="Account Number:" rendered="{!accountNumber}" />
+                        <apex:inputField value="{!account.accountNumber}" rendered="{!accountNumber}" styleClass="account-number"/>
+                        <apex:outputLabel styleClass="account-field-label" value="Type: " rendered="{!accountType}" />
+                        <apex:inputField value="{!account.type}" rendered="{!accountType}" styleClass="account-type"/>
+                        <apex:outputLabel styleClass="account-field-label" value="Industry: " rendered="{!accountIndustry}" />
+                        <apex:inputField value="{!account.industry}" rendered="{!accountIndustry}" styleClass="account-industry"/> 
+                        <apex:outputLabel styleClass="account-field-label" value="Rating: " rendered="{!accountRating}" /><apex:inputField value="{!account.rating}" rendered="{!accountRating}" styleClass="account-rating"/>     
+                    </div>
+                    <div id="tab-4">
+                        <apex:outputLabel styleClass="account-field-label" value="Description" rendered="{!accountDescription}" />
+                        <apex:inputField value="{!account.description}" rendered="{!accountDescription}" styleClass="tAreaH account-description"/>
+                  
+                        <div class="bTop" style="display:block !important"> 
+                            <apex:commandButton value="Save" action="{!saveAccount}" rerender="messagePanel" styleClass="saveAccountButton" style="display:block !important"/>
+                        </div>
+                    </div>
+                    <apex:outputPanel id="messagePanel">
+                        <apex:outputText value="{!message}" id="accountSavedMessage" styleClass="message" rendered="{!IF(message=='', false, true)}"/>
+                    </apex:outputPanel>     
+                </div>
+            </div>
+            </apex:form>
+        </div>
+    </div> 
+    <script>
+        $('.saveAccountButton').on('click', function(){
+            var toAppend = '<tr>';
+            if("{!accountPersonName}" == 'true'){
+                toAppend += '<td>' + $('.account-salutation').val() + ' ' + $('.account-firstname').val() + ' ' + $('.account-lastname').val() + '</td>';
+            }
+            if("{!accountPhone}" == 'true'){
+                toAppend += '<td>' + $('.account-phone').val() + '</td>';
+            }
+            if("{!accountAddress}" == 'true'){
+                toAppend += '<td>' + $('.account-street').val() + ' ' + $('.account-city').val() + ' ' + $('.account-state').val() + ' ' + $('.account-country').val() + '</td>';
+            }
+            if("{!accountNumber}" == 'true'){
+                toAppend += '<td>' + $('.account-number').val() + '</td>';
+            }
+            if("{!accountType}" == 'true'){
+                toAppend += '<td>' + $('.account-type').val() + '</td>';
+            }
+            if("{!accountIndustry}" == 'true'){
+                toAppend += '<td>' + $('.account-industry').val() + '</td>';
+            }
+            if("{!accountRating}" == 'true'){
+                toAppend += '<td>' + $('.account-rating').val() + '</td>';
+            }
+            if("{!accountDescription}" == 'true'){
+                toAppend += '<td>' + $('.account-description').val() + '</td>';
+            }
+            toAppend += '</tr>';
+            $(toAppend).insertBefore('.account-datatable > tbody > tr:first');
+        });
+    </script>
+</apex:component>

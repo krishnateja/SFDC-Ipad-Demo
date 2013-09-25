@@ -1,0 +1,4 @@
+<apex:page showHeader="false" controller="IPadDemoComponentController" action="{!getChatterIdParam}">
+    <chatter:feed entityId="{!chatterId}" />
+
+</apex:page>

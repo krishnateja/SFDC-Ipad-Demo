@@ -1,0 +1,92 @@
+<apex:page controller="iPadMakerSettingsController" showHeader="false">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+    $ = jQuery.noConflict();
+    $(function() {
+        initDashboard();
+    });
+    function Dashboard(dashboardObj){
+        this.BackgroundDirection = dashboardObj.BackgroundDirection;
+        this.BackgroundEnd = dashboardObj.BackgroundEnd ;
+        this.BackgroundStart = dashboardObj.BackgroundStart ;
+        this.Description = dashboardObj.Description ;
+        this.DeveloperName = dashboardObj.DeveloperName ;
+        this.FolderId = dashboardObj.FolderId ;
+        this.LeftSize = dashboardObj.LeftSize;
+        this.MiddleSize = dashboardObj.MiddleSize;
+        this.NamespacePrefix = dashboardObj.NamespacePrefix;
+        this.RightSize = dashboardObj.RightSize;
+        this.RunningUserId = dashboardObj.RunningUserId;
+        this.TextColor = dashboardObj.TextColor;
+        this.Title = dashboardObj.Title;
+        this.TitleColor = dashboardObj.TitleColor;
+        this.TitleSize = dashboardObj.TitleSize;
+        this.Type = dashboardObj.Type;
+    }
+
+    Dashboard.prototype.toHTML = function(){
+        return '<tr>'
+            + '<td><a class="static-link" data-name="' + this.Name + '" data-namespace="' + this.NamespacePrefix + '">' 
+                + this.Name + '</a>'
+            + '</td>'
+            + '<td>' + this.NamespacePrefix + '</td>' 
+            + '<td>' + this.ContentType + '</td>'
+            + '</tr>';
+    }
+
+    function initDashboard(){
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryDashboard}', 
+            function(result){
+                var dialogContents = "";
+                $.each(result, function(){
+                    var resource = new Dashboard(this);
+                    console.log(this);
+                    //dialogContents += resource.toHTML();
+                });
+/*                $('#static-dialog').append(dialogContents);
+                $('.static-link').on('click', function(){
+                    var returnValue = '';
+                    if($(this).attr('data-namespace')){
+                        returnValue = $(this).attr('data-namespace') + '_';
+                    }
+                    returnValue += $(this).attr('data-name');                    
+                    
+                    
+                    //https://ap1.salesforce.com/servlet/servlet.ChartServer?rsid=0FL90000001OZPh
+                    //&ruid=00590000001emsA
+                    //&did=01Z900000009uca
+                    //&s=7&fs=10&tfg=12&tfs=-16777216
+                    //&explode=0&c=pie&cs=0&title=&eh=no&compo=yes&fg=-16777216&bg1=-1&bg2=-1&bgdir=2&dl1=Lead+Status&dl2=&l=2
+                    //&sax=yes&Yman=no&nc=0&actUrl=%2F00O90000003fvCi&sd=1&scv=yes&sct=no&spt=no
+                    //&cu=USD&ab=X&u=0&vt=0&ab2=Y&u2=0&vt2=0&vl0=Record+Count&spoc=no&topn=no&gc0=-1&gc1=-1&gc2=-1&refreshts=1374804040000
+                    
+                    window.returnValue = returnValue;
+                    window.close();
+                });
+                */
+           }
+       );
+    }
+</script>
+<style>
+    a{
+        cursor: pointer;
+        text-decoration: underline !important;
+    }
+    table{
+        margin: 20px;
+        width: 600px;    
+        border-collapse: collapse;
+    }
+    th, td{
+        padding: 5px;    
+        border: 1px solid #aaa;
+    }
+    th{
+        background: #eee;    
+    }    
+
+</style>
+<div id="dashboard-dialog">
+</div>
+</apex:page>

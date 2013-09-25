@@ -1,0 +1,54 @@
+<apex:component controller="IPadDemoComponentController" id="loginComponent" >
+    <apex:attribute name="compName" type="String" required="true" assignTo="{!currentComponent}" description=""/>
+    <apex:attribute name="appId" type="String" required="true" assignTo="{!applicationId}" description=""/>
+    <apex:attribute name="uname" type="String" required="true" assignTo="{!username}" description=""/>
+    <apex:attribute name="pword" type="String" required="true" assignTo="{!password}" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>    
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <apex:attribute name="btnBgColor" type="String" required="true" description=""/>
+    <apex:attribute name="btnColor" type="String" required="true" description=""/>    
+    <apex:attribute name="logoURL" type="String" required="true" description=""/>    
+    <style>
+        #dPage1{
+            background: {!bodyColor};
+            background-image: url({!bgImage});
+        }
+        #dPage1 .ui-btn-up-c, #dPage1 .ui-btn-hover-c{
+            background: {!btnBgColor};
+            color: {!btnColor};            
+        }
+        
+       
+    </style>
+    
+    <apex:repeat value="{!imageList}" var="loginImageListVar">
+        <image src="{!loginImageListVar.ImageURL__c}" 
+                style="
+                    position: relative;
+                    left: {!loginImageListVar.LocationX__c}px;
+                    top: {!loginImageListVar.LocationY__c}px;
+                    height: {!loginImageListVar.Height__c}px;
+                    width: {!loginImageListVar.Width__c}px;" />
+    </apex:repeat>
+
+    <apex:form id="loginForm" forceSSL="true">
+        <apex:outputPanel layout="block">
+            <apex:pageMessages id="error" />
+            <apex:panelGrid >
+                <image src="{!logoURL}" />
+                <apex:inputText id="username" value="{!username}" />
+                <apex:inputSecret id="password" value="{!password}" />
+                
+                <!-- action="{!login}"  class="ui-submit loginBtn ui-btn"-->
+                <!--<apex:commandButton value="{!$Label.site.login_button}" id="loginButton" styleClass="loginBtn" /> -->
+                <div id="loginButton" >
+                    <a href="#dPage2" data-transition="slide">
+                        <input type="button" value="{!$Label.site.login_button}" />
+                    </a>
+                </div>
+            </apex:panelGrid>
+        </apex:outputPanel>
+    </apex:form>
+
+
+</apex:component>

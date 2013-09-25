@@ -1,0 +1,883 @@
+<apex:page standardStylesheets="false" controller="iPadMakerSettingsController">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="{!URLFOR($Resource.jQueryUiDialog, 'js/jquery-ui-1.10.3.custom.min.js')}"></script>
+<script>
+        $ = jQuery.noConflict();
+        $(function() {
+            $('#tabs div').hide();
+            $('#tabs div:first').show();
+            $('#tabs ul li:first').addClass('active');
+            $('#tabs ul li a').click(function(){ 
+                $('#tabs ul li').removeClass('active');
+                $(this).parent().addClass('active'); 
+                var currentTab = $(this).attr('href'); 
+                $('#tabs div').hide();
+                $(currentTab).show();
+                return false;
+            });
+            
+            $("#accordion > li").click(function(){
+                if(false == $(this).next().is(':visible')) {
+                    $('#accordion > ul').slideUp(300);
+                }
+                $(this).next().slideToggle(300);
+            });
+            $('#accordion > ul:eq(0)').show();
+
+
+            addShowPageListeners();
+            attachSaveListener();
+            attachAddImageListener();
+            attachAddLinksListener();
+            attachAddFollowUpListeners();
+            attachBrowseStaticListener();
+            initPages();
+            initAccountFields();
+            initFollowUpFields();
+            initSettingsButtons();
+            initImageList();
+            initFooterIcons();
+            initDashboardImages();
+            initArticleLinks();
+            initVideoLinks();
+            initFollowUpActivityItems();
+            initFollowUpInterestItems();
+            initFollowUpProfileItems();
+            initBgImageSelection();
+            initLayoutSelection();
+        });
+
+        function initLayoutSelection(){
+            if($('#layout-is-two-col').val()=='true'){
+                $('#layout-two-col').prop('checked', true);
+            }else{
+                $('#layout-three-row').prop('checked', true);            
+            }
+        }
+
+        function initBgImageSelection(){
+            if($('#body-use-image').val()=='true'){
+                $('#app-body-bg-img').prop('checked', true);
+            }else{
+                $('#app-body-bg-color').prop('checked', true);            
+            }
+            
+            if($('#body-bg-image').val()=="{!BgImageName1}"){
+                $('#app-body-bg-img-white').prop('checked', true);
+            }else if($('#body-bg-image').val()=="{!BgImageName2}"){
+                $('#app-body-bg-img-green').prop('checked', true);            
+            }else if($('#body-bg-image').val()=="{!BgImageName3}"){
+                $('#app-body-bg-img-blue').prop('checked', true);            
+            }else if($('#body-bg-image').val()=="{!BgImageName4}"){
+                $('#app-body-bg-img-black').prop('checked', true);
+            }else if($('#body-bg-image').val()=="{!BgImageNameBrowse}"){
+                $('#app-body-bg-img-browse').prop('checked', true);
+            }
+
+
+            if($('#login-use-image').val()=='true'){
+                $('#login-body-bg-img').prop('checked', true);
+            }else{
+                $('#login-body-bg-color').prop('checked', true);            
+            }
+            
+            if($('#login-body-bg-image').val()=="{!BgImageName1}"){
+                $('#login-body-bg-img-white').prop('checked', true);
+            }else if($('#login-body-bg-image').val()=="{!BgImageName2}"){
+                $('#login-body-bg-img-green').prop('checked', true);            
+            }else if($('#login-body-bg-image').val()=="{!BgImageName3}"){
+                $('#login-body-bg-img-blue').prop('checked', true);            
+            }else if($('#login-body-bg-image').val()=="{!BgImageName4}"){
+                $('#login-body-bg-img-black').prop('checked', true);
+            }else if($('#login-body-bg-image').val()=="{!BgImageNameBrowse}"){
+                $('#login-body-bg-img-browse').prop('checked', true);
+            }
+        
+        }
+
+        
+        function imageListAttachCallback(result, $element){
+            $.each(result, function() {
+                addNewImageDiv(new ApplicationImage__c(this), $element.find('#image-list-container'));
+            });
+        }
+        function footerIconAttachCallback(result, $element){
+            $.each(result, function() {
+                addNewIconDiv(new ApplicationImage__c(this), $element.find('#footer-icon-container'));
+            });
+        }
+        function dashboardImageAttachCallback(result, $element){
+            $.each(result, function() {
+                addNewDashboardImageDiv(new ApplicationImage__c(this), $element.find('#dashboard-list-container'));
+            });
+        }        
+        function addNewIconDiv(imageObj, $container){
+            $container.append(imageObj.toFooterHTML());
+            attachBrowseStaticListener($container.find('.image-browse:last'));
+        }
+        function addNewDashboardImageDiv(imageObj, $container){
+            $container.append(imageObj.toDashboardHTML());
+            attachRemoveListener($container.find('.image-dashboard-remove:last'));
+        }
+        function initDashboardImages(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryDashboardImages}', 
+                    $('#record-id').val(),
+                    function(result){
+                        if(result.length==0){
+                            addNewDashboardImageDiv(new ApplicationImage__c({
+                                PageType__c : "{!page2Name}",
+                                IsDashboardImage__c : true,                                
+                            }), $('#edit-page2').find('#dashboard-list-container'));
+                        }else{
+                            dashboardImageAttachCallback(result, $('#edit-page2'));
+                        }
+                    }
+            );        
+        }
+
+        function attachRemoveListener($elem){
+            $($elem).on('click', function(){
+                $(this).closest('.property-container-div').attr('data-removed', 'true');
+                $(this).closest('.property-container-div').hide();
+            });        
+        }
+
+        function addNewArticleDiv(linkObj, $container){
+            $container.append(linkObj.toArticleLinkHTML ());
+            attachRemoveListener($container.find('.link-article-remove:last'));
+        }
+        function addNewVideoDiv(linkObj, $container){
+            $container.append(linkObj.toVideoLinkHTML ());
+            attachRemoveListener($container.find('.link-video-remove:last'));
+        }
+
+        function initArticleLinks(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryArticles}', 
+                    $('#record-id').val(),
+                    function(result){
+                        if(result.length==0){
+                            addNewArticleDiv(new ApplicationLink__c({
+                                PageType__c : "{!page4Name}",
+                                IsArticle__c : true,                                
+                            }), $('#edit-page4').find('#article-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                addNewArticleDiv(new ApplicationLink__c(this), $('#edit-page4').find('#article-list-container'));
+                            });
+                        }
+                    }
+            );
+        }
+        function initVideoLinks(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryVideos}', 
+                    $('#record-id').val(),
+                    function(result){
+                        if(result.length==0){
+                            addNewVideoDiv(new ApplicationLink__c({
+                                PageType__c : "{!page4Name}",
+                                IsVideo__c : true,                                
+                            }), $('#edit-page4').find('#video-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                addNewVideoDiv(new ApplicationLink__c(this), $('#edit-page4').find('#video-list-container'));
+                            });
+                        }
+                    }
+            );        
+        }
+
+        function addNewFollowUpItem(followUpObjHTML, $container){
+            $container.append(followUpObjHTML);
+            attachRemoveListener($container.find('.followup-remove:last'));
+            attachBrowseStaticListener($container.find('.image-browse:last'));
+        }
+        
+        function initFollowUpActivityItems(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryFollowUpItem}', 
+                    $('#record-id').val(), "{!followUpActivity}",
+                    function(result){
+                        var followUpObj = null;
+                        if(result.length==0){
+                            followUpObj = new ApplicationFollowUpItem__c({
+                                PageType__c : "{!page5Name}",
+                                Type__c : "{!followUpActivity}"
+                            });
+                            addNewFollowUpItem(followUpObj.toActivityHTML(), $('#edit-page5').find('#activity-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                followUpObj = new ApplicationFollowUpItem__c(this);
+                                addNewFollowUpItem(followUpObj.toActivityHTML(), $('#edit-page5').find('#activity-list-container'));
+                            });
+                        }
+
+                    }
+            );        
+        }
+
+        function initFollowUpInterestItems(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryFollowUpItem}', 
+                    $('#record-id').val(), "{!followUpInterest}",
+                    function(result){
+                        var followUpObj = null;
+                        if(result.length==0){
+                            followUpObj = new ApplicationFollowUpItem__c({
+                                PageType__c : "{!page5Name}",
+                                Type__c : "{!followUpInterest}"
+                            });
+                            addNewFollowUpItem(followUpObj.toInterestHTML(), $('#edit-page5').find('#interest-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                followUpObj = new ApplicationFollowUpItem__c(this);
+                                addNewFollowUpItem(followUpObj.toInterestHTML(), $('#edit-page5').find('#interest-list-container'));
+                            });
+                        }
+
+                    }
+            );        
+        }
+
+        function initFollowUpProfileItems(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryFollowUpItem}', 
+                    $('#record-id').val(), "{!followUpProfile}",
+                    function(result){
+                        var followUpObj = null;
+                        if(result.length==0){
+                            followUpObj = new ApplicationFollowUpItem__c({
+                                PageType__c : "{!page5Name}",
+                                Type__c : "{!followUpProfile}"                            
+                            });
+                            addNewFollowUpItem(followUpObj.toProfileHTML(), $('#edit-page5').find('#profile-list-container'));
+                        }else{
+                            $.each(result, function() {
+                                followUpObj = new ApplicationFollowUpItem__c(this);
+                                addNewFollowUpItem(followUpObj.toProfileHTML(), $('#edit-page5').find('#profile-list-container'));
+                            });
+                        }
+
+                    }
+            );        
+        }
+
+
+
+        function initFooterIcons(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page1Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page1Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page1').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page1'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page2Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page2Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page2').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page2'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page3Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page3Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page3').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page3'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page4Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page4Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page4').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page4'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page5Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page5Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page5').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page5'));
+                        }
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page6Name}", true,
+                    function(result){
+                        if(result.length==0){
+                            addNewIconDiv(new ApplicationImage__c({
+                                PageType__c : "{!page6Name}",
+                                IsFooterImage__c : true
+                            }), $('#edit-page6').find('#footer-icon-container'));
+                        }else{
+                            footerIconAttachCallback(result, $('#edit-page6'));
+                        }
+                    }
+            );
+        }
+        
+        
+        function initImageList(){
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryLoginImages}', 
+                    $('#record-id').val(), 
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-loginPage'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!homePageName}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-homePage'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page1Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page1'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page2Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page2'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page3Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page3'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page4Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page4'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page5Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page5'));
+                    }
+            );
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.queryImages}', 
+                    $('#record-id').val(), "{!page6Name}", false,
+                    function(result){
+                        imageListAttachCallback(result, $('#edit-page6'));
+                    }
+            );
+
+        }
+        
+        function initSettingsButtons(){
+            if($('#record-id').val()){    //show view app, and create access URL buttons only if record is saved
+                $('#view-btn').show();
+                attachViewListener();
+                $('#create-url-btn').show();
+                attachCreateURLListener();
+            }
+        }
+        
+        function initPages(){
+            if($('#page1-active-hidden').val() == 'true' ){
+                $('#page1-active').attr('checked', 'checked');
+            }
+            if($('#page2-active-hidden').val() == 'true' ){
+                $('#page2-active').attr('checked', 'checked');
+            }
+            if($('#page3-active-hidden').val() == 'true' ){
+                $('#page3-active').attr('checked', 'checked');
+            }
+            if($('#page4-active-hidden').val() == 'true' ){
+                $('#page4-active').attr('checked', 'checked');
+            }
+            if($('#page5-active-hidden').val() == 'true' ){
+                $('#page5-active').attr('checked', 'checked');
+            }
+            if($('#page6-active-hidden').val() == 'true' ){
+                $('#page6-active').attr('checked', 'checked');
+            }
+        }
+
+        function initAccountFields(){
+            if($('#account-number-hidden').val() == 'true' ){
+                $('#account-number').attr('checked', 'checked');
+            }
+            if($('#account-type-hidden').val() == 'true' ){
+                $('#account-type').attr('checked', 'checked');
+            }
+            if($('#account-industry-hidden').val() == 'true' ){
+                $('#account-industry').attr('checked', 'checked');
+            }
+            if($('#account-rating-hidden').val() == 'true' ){
+                $('#account-rating').attr('checked', 'checked');
+            }
+            if($('#account-phone-hidden').val() == 'true' ){
+                $('#account-phone').attr('checked', 'checked');
+            }
+            if($('#account-address-hidden').val() == 'true' ){
+                $('#account-address').attr('checked', 'checked');
+            }
+            if($('#account-description-hidden').val() == 'true' ){
+                $('#account-description').attr('checked', 'checked');
+            }
+            if($('#account-personname-hidden').val() == 'true' ){
+                $('#account-personname').attr('checked', 'checked');
+            }
+            if($('#account-birthdate-hidden').val() == 'true' ){
+                $('#account-birthdate').attr('checked', 'checked');
+            }
+            if($('#account-email-hidden').val() == 'true' ){
+                $('#account-email').attr('checked', 'checked');
+            }            
+        }
+
+        function initFollowUpFields(){
+            if($('#followup-show-tasks-hidden').val() == 'true' ){
+                $('#followup-show-tasks').attr('checked', 'checked');
+            }        
+            if($('#followup-show-events-hidden').val() == 'true' ){
+                $('#followup-show-events').attr('checked', 'checked');
+            }        
+        }        
+        
+        function addShowPageListeners(){
+            $('#loginPage').on('click', function(){
+                $('.edit-page').removeClass('active');
+                $('#edit-loginPage').addClass('active');
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#homePage').on('click', function(){
+                $('.edit-page').removeClass('active');
+                $('#edit-homePage').addClass('active');
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page1').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page1').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page2').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page2').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page3').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page3').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page4').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page4').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page5').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page5').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+            $('#page6').on('click', function(){                
+                $('.edit-page').removeClass('active');
+                $('#edit-page6').addClass('active');            
+                $(this).siblings().removeClass('active-btn');                
+                $(this).addClass('active-btn');
+            });
+        }
+        
+
+        
+        function attachViewListener(){
+            $('#view-btn').on('click', function(){                   
+                $(this).target = "_blank";
+                window.open($('#application-url').val());
+                return false;
+            });
+        }
+        
+        function attachCreateURLListener(){
+            $('#create-url-btn').on('click', function(){                   
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.sendApplicationURL}', 
+                    $('#record-id').val(), 
+                    function(result){
+                        alert('The access URL is: ' + result + ' \n\nThis URL was sent to your email address.');
+                    }, function(e){
+                        alert('Error sending URL');
+                    }
+               );
+           });
+        }
+        
+        function addNewImageDiv(imageObj, $container){
+            $container.append(imageObj.toHTML());
+            attachRemoveListener($container.find('.image-remove:last'));
+            attachBrowseStaticListener($container.find('.image-browse:last'));
+        }
+        
+        function attachAddImageListener(){
+            $('.add-image-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#image-list-container');
+                addNewImageDiv(new ApplicationImage__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsFooterImage__c : false
+                    }), $elem);
+            });
+            $('.add-dashboard-image-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#dashboard-list-container');
+                addNewDashboardImageDiv(new ApplicationImage__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsDashboardImage__c : true
+                    }), $elem);
+            }); 
+        }
+
+        function attachBrowseStaticListener(elem){
+            if(!elem){
+                elem = '.image-browse';
+            }
+            $(elem).on('click', function(){
+                var result = window.showModalDialog('/apex/iPadMaker_StaticDialog');
+                if(result){
+                    // $(this).parent().prev().find('.image-url').val('/resource/'+result);
+                    $(this).siblings('.image-url').val('/resource/'+result);
+                }
+            });                                
+        }
+
+        function attachAddFollowUpListeners(){
+            $('.add-activity-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#activity-list-container');
+                var followUpObj = new ApplicationFollowUpItem__c({
+                    PageType__c : "{!page5Name}",
+                    Type__c : "{!followUpActivity}"                            
+                    });
+                addNewFollowUpItem(followUpObj.toActivityHTML(), $elem);
+            });
+            $('.add-interest-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#interest-list-container');
+                var followUpObj = new ApplicationFollowUpItem__c({
+                    PageType__c : "{!page5Name}",
+                    Type__c : "{!followUpInterest}"
+                    });
+                addNewFollowUpItem(followUpObj.toInterestHTML(), $elem);
+            });
+            $('.add-profile-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#profile-list-container');
+                var followUpObj = new ApplicationFollowUpItem__c({
+                    PageType__c : "{!page5Name}",
+                    Type__c : "{!followUpProfile}"
+                    });
+                addNewFollowUpItem(followUpObj.toProfileHTML(), $elem);
+            });
+        }
+        
+        function attachAddLinksListener(){
+            $('.add-article-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#article-list-container');
+                addNewArticleDiv(new ApplicationLink__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsArticle__c : true
+                    }), $elem);
+            });
+            $('.add-video-btn').on('click', function(){
+                var $elem = $(this).closest('.edit-page').find('#video-list-container');
+                addNewVideoDiv(new ApplicationLink__c({
+                        PageType__c : $(this).closest('.edit-page').find('.page-name').val(),
+                        IsVideo__c : true
+                    }), $elem);
+            });
+        }
+        
+
+        function getBgImageValue(){
+            if($('#app-body-bg-img-white').is(':checked')){
+                return "{!BgImageName1}";
+            }else if($('#app-body-bg-img-green').is(':checked')){
+                return "{!BgImageName2}";
+            }else if($('#app-body-bg-img-blue').is(':checked')){
+                return "{!BgImageName3}";
+            }else if($('#app-body-bg-img-black').is(':checked')){
+                return "{!BgImageName4}";
+            }else if($('#app-body-bg-img-browse').is(':checked')){
+                return "{!BgImageNameBrowse}";
+            }
+        }
+        
+        
+        function getLoginBgImageValue(){
+            if($('#login-body-bg-img-white').is(':checked')){
+                return "{!BgImageName1}";
+            }else if($('#login-body-bg-img-green').is(':checked')){
+                return "{!BgImageName2}";
+            }else if($('#login-body-bg-img-blue').is(':checked')){
+                return "{!BgImageName3}";
+            }else if($('#login-body-bg-img-black').is(':checked')){
+                return "{!BgImageName4}";
+            }else if($('#login-body-bg-img-browse').is(':checked')){
+                return "{!BgImageNameBrowse}";
+            }        
+        }
+
+        function attachSaveListener(){
+            $('#save-btn').on('click', function(){
+                var bodyBgImage = getBgImageValue();
+                var loginBgImage = getLoginBgImageValue();
+                var iPadApp = new IPadApplication__c({
+                    Id : $('#record-id').val(),
+                    Name : $('#app-name').val(),
+                    BodyColor__c : $('#app-body-bg').val(),
+                    BodyIsUseImage__c : ($('#app-body-bg-img').is(':checked') ? true : false),
+                    BodyBgImage__c : bodyBgImage,
+                    IsTwoCol__c : ($('#layout-two-col').is(':checked') ? true : false),
+                    BodyBgImageURL__c : $('#app-body-bg-img-url').val(),
+                    LoginBodyColor__c : $('#login-body-color').val(),
+                    LoginIsUseImage__c : ($('#login-body-bg-img').is(':checked') ? true : false),
+                    LoginBgImage__c : loginBgImage,
+                    LoginBgImageURL__c : $('#login-body-bg-img-url').val(),
+                    LogoURL__c : $('#logo-url').val(),        
+                    FooterColor__c : $('#app-footer-bg').val(),
+                    HeaderColor__c : $('#app-header-bg').val(),
+                    FooterFontColor__c : $('#app-footer-fg').val(),
+                    HeaderFontColor__c : $('#app-header-fg').val(),
+                    AboutText__c : $('#home-about-txt').val(),
+                    Home_Page_Title__c : $('#home-title').val(),
+                    Page_1_Active__c : $('#page1-active').is(':checked') ? true : false,
+                    Page_2_Active__c : $('#page2-active').is(':checked') ? true : false,
+                    Page_3_Active__c : $('#page3-active').is(':checked') ? true : false, 
+                    Page_4_Active__c : $('#page4-active').is(':checked') ? true : false,
+                    Page_5_Active__c : $('#page5-active').is(':checked') ? true : false, 
+                    Page_6_Active__c : $('#page6-active').is(':checked') ? true : false,                   
+                    Page_1_Title__c : $('#page1-title').val(),
+                    Page_2_Title__c : $('#page2-title').val(),
+                    Page_3_Title__c : $('#page3-title').val(),
+                    Page_4_Title__c : $('#page4-title').val(),
+                    Page_5_Title__c : $('#page5-title').val(),
+                    Page_6_Title__c : $('#page6-title').val(), 
+                    ChatterId__c : $('#chatter-id').val(),
+                    ChatterPositionX__c : $('#chatter-locX').val(), 
+                    ChatterPositionY__c : $('#chatter-locY').val(),                     
+                    ApplicationURL__c : $('#application-url').val(),
+                    DashboardId__c : $('#dashboard-id').val(),
+                    DashboardPositionX__c : $('#dashboard-locX').val(),
+                    DashboardPositionY__c : $('#dashboard-locY').val(),
+                    VisualforcePageName__c : $('#vf-name').val(),
+                    VisualforcePageLocationX__c : $('#vf-locX').val(),
+                    VisualforcePageLocationY__c : $('#vf-locY').val(),
+                    AccountNumber__c : $('#account-number').is(':checked') ? true : false, 
+                    AccountType__c : $('#account-type').is(':checked') ? true : false, 
+                    AccountIndustry__c : $('#account-industry').is(':checked') ? true : false, 
+                    AccountRating__c : $('#account-rating').is(':checked') ? true : false, 
+                    AccountPhone__c : $('#account-phone').is(':checked') ? true : false, 
+                    AccountAddress__c : $('#account-address').is(':checked') ? true : false, 
+                    AccountDescription__c : $('#account-description').is(':checked') ? true : false, 
+                    AccountPersonName__c : $('#account-personname').is(':checked') ? true : false, 
+                    AccountPersonBirthdate__c : $('#account-birthdate').is(':checked') ? true : false,
+                    AccountPersonEmail__c : $('#account-email').is(':checked') ? true : false,
+                    LoginLabelColor__c : $('#login-label-color').val(),
+                    LoginButtonColor__c : $('#login-button-color').val(),
+                    LoginButtonLabelColor__c : $('#login-button-label-color').val(),
+                    Password__c : $('#password').val(),
+                    Username__c : $('#username').val(),
+                    FollowUpMapHeight__c : $('#followup-map-height').val(),
+                    FollowUpMapWidth__c : $('#followup-map-width').val(),
+                    FollowUpMapZoom__c : $('#followup-map-zoom').val(),
+                    FollowUpShowTasks__c : $('#followup-show-tasks').is(':checked') ? true : false,
+                    FollowUpShowEvents__c : $('#followup-show-events').is(':checked') ? true : false,
+                    FollowUpActivitiesLabel__c : $('#followup-activities-label').val(),
+                    FollowUpProfileLabel__c : $('#followup-profile-label').val(),
+                    FollowUpInterestLabel__c : $('#followup-interest-label').val(),
+                    FollowUpButton1BgColor__c : $('#followup-button1-bg-color').val(),
+                    FollowUpButton1FontColor__c : $('#followup-button1-font-color').val(),
+                    FollowUpButton1Label__c : $('#followup-button1-label').val(),
+                    FollowUpButton2BgColor__c : $('#followup-button2-bg-color').val(),
+                    FollowUpButton2FontColor__c : $('#followup-button2-font-color').val(),
+                    FollowUpButton2Label__c : $('#followup-button2-label').val(),
+                    FollowUpContactImageURL__c : $('#followup-contact-image').val(), 
+                    FollowUpContactTwitterHandle__c : $('#followup-contact-twitter').val(),
+                });
+                console.log(iPadApp);
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveApplication}', 
+                    iPadApp, function(result){
+                        alert('saved app');
+                        if(!iPadApp.Id){    //is new record
+                            $('#record-id').val(result);
+                            $('#application-url').val(iPadApp.ApplicationURL__c);
+                            initSettingsButtons();
+                        }
+                        saveImages();
+                    });
+            });
+        }
+        
+        
+        function saveImages(){
+            var imageList = [];
+            $.each($(".image-div[data-removed!='true']"), function() {
+                if($(this).find('.image-url').val() || $(this).find('.image-dashboard-url').val()){
+                    imageList.push(new ApplicationImage__c({
+                        Id : $(this).find('.image-id').val(),
+                        ImageURL__c : $(this).find('.image-url').val(),
+                        Height__c : $(this).find('.image-height').val(),
+                        Width__c : $(this).find('.image-width').val(),
+                        LocationX__c : $(this).find('.image-locX').val(),
+                        LocationY__c : $(this).find('.image-locY').val(),
+                        PageType__c : $(this).find('.image-pagetype').val(),
+                        IsFooterImage__c : $(this).find('.image-isfooter').val()=='true' ? true : false,
+                        IsDashboardImage__c : $(this).find('.image-isdashboard').val()=='true' ? true : false,
+                        DashboardURL__c : $(this).find('.image-dashboard-url').val(), 
+                        Label__c : $(this).find('.image-label').val(),
+                        LabelFontSize__c : $(this).find('.image-label-font-size').val(),
+                        LabelLocationX__c : $(this).find('.image-label-locX').val(),
+                        LabelLocationY__c : $(this).find('.image-label-locY').val(),
+                        DashboardFromURL__c :($(this).find('.dashboard-chart-image').is(':checked') ? true : false),
+                        ReportId__c : $(this).find('.image-report').val(),
+                        ChartType__c : $(this).find('.image-chart-type option:selected').val(),
+                        DasboardLegendLabel__c : $(this).find('.image-dashboard-legend-label').val(),
+                        DasboardValueLabel__c : $(this).find('.image-dashboard-value-label').val(),
+                    }));
+                }
+
+            });
+            console.log(imageList);
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveImages}', 
+                    imageList, $('#record-id').val(),function(result){
+                        //assign new Ids
+                        $.each(result, function() {
+                            var image = new ApplicationImage__c(this);
+                            image.assignNewId();
+                        }); 
+            });
+
+            imageList = [];
+            $.each($(".image-div[data-removed='true']"), function() {
+                imageList.push(new ApplicationImage__c({
+                    Id : $(this).find('.image-id').val(),
+                }));
+            });
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.removeImages}', 
+                    imageList, function(result){
+                        //remove deleted image DOMS
+                        $('.image-div[data-removed="true"]').remove();
+                    }
+            );
+
+            saveLinks();
+        }
+
+        function saveLinks(){
+            var linkList = [];
+            $.each($(".link-div[data-removed!='true']"), function() {
+                if($(this).find('.link-name').val()){
+                    linkList.push(new ApplicationLink__c({
+                        Id : $(this).find('.link-id').val(),
+                        Name : $(this).find('.link-name').val(),
+                        IsArticle__c : $(this).find('.link-isarticle').val()=='true' ? true : false,
+                        IsVideo__c : $(this).find('.link-isvideo').val()=='true' ? true : false,
+                        PageType__c : $(this).find('.link-pagetype').val(),
+                        URL__c : $(this).find('.link-url').val(),
+                    }));                
+                }
+
+            });
+            console.log(linkList);
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveLinks}', 
+                    linkList, $('#record-id').val(),function(result){
+                        //assign new Ids
+                        $.each(result, function() {
+                            var link = new ApplicationLink__c(this);
+                            link.assignNewId();
+                        }); 
+                    }
+            );
+
+            linkList = [];
+            $.each($(".link-div[data-removed='true']"), function() {
+                linkList.push(new ApplicationLink__c({
+                    Id : $(this).find('.link-id').val(),
+                }));
+            });
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.removeLinks}', 
+                    linkList, function(){
+                        //remove deleted image DOMS
+                        $('.link-div[data-removed="true"]').remove();
+                    }
+            );
+            saveFollowUps();
+        }
+
+        function saveFollowUps(){
+            var followupList = [];
+            $.each($(".followup-div[data-removed!='true']"), function() {
+                if($(this).find('.followup-label').val()){
+                    followupList.push(new ApplicationFollowUpItem__c({
+                        Id : $(this).find('.followup-id').val(),
+                        ActivityDate__c : $(this).find('.followup-activity-date').val(),
+                        CheckboxValue__c : $(this).find('.followup-checkbox-value').is(':checked') ? true : false, 
+                        IconURL__c : $(this).find('.followup-icon-url').val(),
+                        IsCheckbox__c : $(this).find('.followup-ischeckbox').val()=='true' ? true : false,
+                        Label__c : $(this).find('.followup-label').val(),
+                        PageType__c : $(this).find('.followup-pagetype').val(),
+                        TextValue__c : $(this).find('.followup-text-value').val(),
+                        Type__c : $(this).find('.followup-type').val(),
+                        SortNumber__c : $(this).find('.followup-sort-number').val(),
+                    }));
+                }
+            });
+            console.log(followupList);
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.saveFollowUpItems}', 
+                    followupList, $('#record-id').val(),function(result){
+                        //assign new Ids
+                        $.each(result, function() {
+                            var followup = new ApplicationFollowUpItem__c(this);
+                            followup.assignNewId();
+                        }); 
+                    }
+            );
+
+            followupList = [];
+            $.each($(".followup-div[data-removed='true']"), function() {
+                followupList.push(new ApplicationFollowUpItem__c({
+                    Id : $(this).find('.followup-id').val(),
+                }));
+            });
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.iPadMakerSettingsController.removeFollowUpItems}', 
+                    followupList, function(){
+                        //remove deleted followup dom
+                        $('.followup-div[data-removed="true"]').remove();
+                    }
+            );
+        }
+</script>
+</apex:page>

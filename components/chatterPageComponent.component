@@ -1,0 +1,44 @@
+<apex:component controller="IPadDemoComponentController" id="chatterPageComponent" >
+    <apex:attribute name="compName" type="String" required="true" assignTo="{!currentComponent}" description=""/>
+    <apex:attribute name="appId" type="String" required="true" assignTo="{!applicationId}" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>    
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <apex:attribute name="chatterId" type="String" required="true" description=""/>
+    <apex:attribute name="chatterLocX" type="Integer" required="true" description=""/>
+    <apex:attribute name="chatterLocY" type="Integer" required="true" description=""/>
+
+    <style>
+        #dPage3{
+            background: {!bodyColor};
+            background-image: url({!bgImage});
+        }
+        .chatter-container{
+            position: relative;
+            left: {!chatterLocX}px;
+            top: {!chatterLocY}px;
+            width: 96%;
+            padding: 10px;
+            border-radius:10px;
+            border-top:solid 1px #fff;
+            height:94%;
+            overflow-x:hidden;
+            overflow-y:scroll;
+          -webkit-overflow-scrolling: touch;
+            background: rgba(255, 255, 255, 1);
+        }
+    </style>
+
+    <div data-role="content" class="ipad-content"> 
+        <apex:repeat value="{!imageList}" var="chatterImageListVar">
+            <image src="{!chatterImageListVar.ImageURL__c}" 
+                style="position: relative;
+                        left: {!chatterImageListVar.LocationX__c}px;
+                        top: {!chatterImageListVar.LocationY__c}px;
+                        height: {!chatterImageListVar.Height__c}px;
+                        width: {!chatterImageListVar.Width__c}px;" />
+        </apex:repeat>
+        <div class="chatter-container">
+            <iframe src="/apex/ChatterPage?id={!chatterId}" frameborder="0" width="98%"  style="margin:10px; height:400px; overflow:scholl;" ></iframe>
+        </div>
+    </div> 
+</apex:component>

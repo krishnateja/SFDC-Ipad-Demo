@@ -1,0 +1,23 @@
+<apex:component id="vfPageComponent" >
+    <apex:attribute name="compName" type="String" required="true" description=""/>
+    <apex:attribute name="appId" type="String" required="true" description=""/>
+    <apex:attribute name="bodyColor" type="String" required="true" description=""/>
+    <apex:attribute name="bgImage" type="String" required="true" description=""/>
+    <apex:attribute name="apexPage" type="String" required="true" description=""/>
+    <apex:attribute name="apexPageLocX" type="String" required="true" description=""/>
+    <apex:attribute name="apexPageLocY" type="String" required="true" description=""/>
+    <style>
+        #dPage8{
+            background: {!bodyColor};
+            background-image: url({!bgImage});
+        }
+    </style>
+
+    <div data-role="content" class="ipad-content"> 
+        <div class="vf-container">
+            <iframe src="/apex/{!apexPage}" style="width: 100%; height: 550px;" frameborder="0"></iframe>
+        </div>
+    </div> 
+
+
+</apex:component>

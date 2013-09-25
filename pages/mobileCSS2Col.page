@@ -1,0 +1,86 @@
+<apex:page contentType="text/css">
+
+#dPage5 .account-field-container{
+padding:0 !important;
+overflow:hidden !important;
+}
+
+    .footer{
+         width:200px;
+         height:700px;
+         left:0;
+    }
+    .links-holder{
+        width: 220px !important;
+        height:94%;
+    }
+     #dPage6 .content-holder{
+     
+            width: 580px !important;
+       
+        }
+    .left{
+        width: 220px !important;
+    }
+    .ipad-content{
+       width:880px ;
+       float:right;
+       height:680px
+    }
+   
+    .footMid{
+    margin-top:43px;
+        height: 713px;
+        float:left;       
+        position:absolute;
+        top:1px;
+         float:right;
+      
+        background:#000;
+        width:106px;
+    }    
+    .appWH .footer-icon-holder {
+    width:105px;
+    padding:5px 0
+    }
+    .appWH .footer-icon-holder img{
+         
+        width:30px;
+        height:30px;
+    }
+    .appWH .footer-icon-holder label{
+       font-size:11px;
+     
+       
+    }
+    
+    .centerbox-inner a{
+      
+        border-bottom:solid 1px #000;
+        background: #323232;
+        padding:0
+    }
+    
+    .account-field-container{
+    height:660px !important;
+    }
+    .links-holder,.content-holder,{
+    height:680px !important;
+    }
+    
+    .dashboard-container{
+    height:660px !important;
+    }
+    .links-holder,.content-holder, .left, .right {
+    height:645px !important;
+    }
+   .viewBtn{
+   right:48px !important;
+   }
+   
+  
+  #dPage7 .content-holder{
+   width:575px !important;
+  }
+  
+</apex:page>
